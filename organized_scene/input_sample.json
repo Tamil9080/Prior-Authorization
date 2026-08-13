@@ -1,0 +1,20 @@
+{
+  "Carrier": "Carrier A",
+  "Year": 2020,
+  "Service category": "Outpatient Med-Surg",
+  "Request": "Codes with the highest total number of prior authorization requests during the previous plan year",
+  "Code type": "CPT",
+  "Code": "99214",
+  "Description of service": "Office or other outpatient visit for the evaluation and management of an established patient, which requires a medically appropriate history and/or examination and moderate level of medical decision making.",
+  "Number of requests per code": 198,
+  "Approval rate": "31%",
+  "Initially denied then approved - approval rate": "",
+  "Expedited - Avg response time": "",
+  "Standard - Avg response time": 34,
+  "Extenuating circumstances - Avg response time": "",
+  "Expedited - Number of requests": "",
+  "Standard - Number of requests": 92,
+  "Extenuating circumstances - Number of requests": "",
+  "Drug name": "NA",
+  "Drug brand names": "NA"
+}

@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prior Authorization Predictor Dashboard</title>
+    <!-- Outfit Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(20, 26, 45, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-glow: #7c4dff;
+            --secondary-glow: #00e5ff;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --success-color: #00e676;
+            --danger-color: #ff1744;
+            --warning-color: #ffea00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(124, 77, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 229, 255, 0.1) 0%, transparent 40%);
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            background: rgba(124, 77, 255, 0.2);
+            color: #d1c4e9;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 99px;
+            border: 1px solid rgba(124, 77, 255, 0.4);
+            font-weight: 500;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+            width: 100%;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.4rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            max-width: fit-content;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary-glow), rgba(124, 77, 255, 0.6));
+            color: var(--text-primary);
+            box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(124, 77, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .card-title svg {
+            color: var(--primary-glow);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 580px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, select, textarea {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-glow);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 10px rgba(124, 77, 255, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 20px rgba(124, 77, 255, 0.2);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(124, 77, 255, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Result Panel */
+        .result-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            color: var(--text-secondary);
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .result-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .decision-banner {
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decision-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .decision-banner.approved {
+            background: rgba(0, 230, 118, 0.1);
+            border-color: rgba(0, 230, 118, 0.3);
+            color: var(--success-color);
+        }
+        .decision-banner.approved::before { background: var(--success-color); }
+
+        .decision-banner.denied {
+            background: rgba(255, 23, 68, 0.1);
+            border-color: rgba(255, 23, 68, 0.3);
+            color: var(--danger-color);
+        }
+        .decision-banner.denied::before { background: var(--danger-color); }
+
+        .decision-banner.pending {
+            background: rgba(255, 234, 0, 0.1);
+            border-color: rgba(255, 234, 0, 0.3);
+            color: var(--warning-color);
+        }
+        .decision-banner.pending::before { background: var(--warning-color); }
+
+        .decision-value {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            z-index: 1;
+            position: relative;
+        }
+
+        .decision-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            z-index: 1;
+            position: relative;
+        }
+
+        .result-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-key {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .result-val {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .reason-box {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 1.25rem;
+            border-left: 4px solid var(--primary-glow);
+            margin-top: 1rem;
+        }
+
+        .reason-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .reason-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .probability-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .prob-bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .prob-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .prob-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .prob-name {
+            color: var(--text-secondary);
+            text-transform: capitalize;
+        }
+
+        .prob-val {
+            font-weight: 600;
+        }
+
+        .progress-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            height: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+            height: 100%;
+            border-radius: 99px;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.1, 0.8, 0.25, 1);
+        }
+
+        /* Preset buttons */
+        .preset-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: rgba(124, 77, 255, 0.15);
+            border-color: var(--primary-glow);
+            color: var(--text-primary);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: var(--text-primary);
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                PriorAuth AI 
+                <span class="badge">Model Portal</span>
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary)">
+                Flask + RandomForest Pipeline
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab('clinical')">Clinical Decision Model</button>
+            <button class="tab-btn" onclick="switchTab('export')">Aggregate Rate Model</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Form Card -->
+            <div class="card">
+                <!-- Clinical Form -->
+                <div id="clinical-form-panel">
+                    <div class="card-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        Clinical Patient-Level Prior Auth
+                    </div>
+
+                    <div class="preset-buttons">
+                        <span style="font-size: 0.8rem; align-self: center; margin-right: 0.5rem; color: var(--text-secondary)">Presets:</span>
+                        <button class="preset-btn" onclick="loadClinicalPreset('TEST001')">Rheumatoid Arthritis (TEST001)</button>
+                        <button class="preset-btn" onclick="loadClinicalPreset('ADHD')">ADHD (Denied Step)</button>
+                        <button class="preset-btn" onclick="loadClinicalPreset('KNEE')">Osteoarthritis (Knee Joint)</button>
+                    </div>
+
+                    <form id="clinical-form" onsubmit="submitClinical(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="age">Age</label>
+                                <input type="number" id="age" name="age" required value="58">
+                            </div>
+                            <div class="form-group">
+                                <label for="urgency">Urgency</label>
+                                <select id="urgency" name="urgency">
+                                    <option value="Routine">Routine</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="Emergent">Emergent</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="diagnosis">Diagnosis Description</label>
+                                <input type="text" id="diagnosis" name="diagnosis" required value="Rheumatoid Arthritis">
+                            </div>
+                            <div class="form-group">
+                                <label for="diagnosis_code">Diagnosis Code (ICD-10)</label>
+                                <input type="text" id="diagnosis_code" name="diagnosis_code" required value="M06.9">
+                            </div>
+                            <div class="form-group">
+                                <label for="requested_service">Requested Service</label>
+                                <input type="text" id="requested_service" name="requested_service" required value="Adalimumab (Humira) therapy">
+                            </div>
+                            <div class="form-group">
+                                <label for="procedure_code">Procedure/Drug Code</label>
+                                <input type="text" id="procedure_code" name="procedure_code" required value="J0135">
+                            </div>
+                            <div class="form-group">
+                                <label for="provider_specialty">Provider Specialty</label>
+                                <input type="text" id="provider_specialty" name="provider_specialty" required value="Rheumatology">
+                            </div>
+                            <div class="form-group">
+                                <label for="policy_id">Insurance Policy ID</label>
+                                <input type="text" id="policy_id" name="policy_id" required value="POL100974">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="clinical_history">Clinical History Notes</label>
+                                <textarea id="clinical_history" name="clinical_history" required>58-year-old patient with rheumatoid arthritis, symptom duration 1 year, no relevant comorbidities noted.</textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="previous_treatments">Previous Treatments Tried</label>
+                                <textarea id="previous_treatments" name="previous_treatments" required>Methotrexate 15mg weekly x3 months; Sulfasalazine</textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="medications">Current Active Medications</label>
+                                <textarea id="medications" name="medications" required>Methotrexate 15mg, Folic acid 1mg</textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="lab_results">Supporting Lab/Imaging Results</label>
+                                <textarea id="lab_results" name="lab_results" required>RF positive, anti-CCP positive</textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn-submit" id="clinical-btn">
+                                <span class="spinner" id="clinical-spinner"></span>
+                                Run Clinical Decision Engine
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Export Form -->
+                <div id="export-form-panel" style="display: none;">
+                    <div class="card-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+                        Aggregate Carrier-Level Rate Form
+                    </div>
+
+                    <div class="preset-buttons">
+                        <span style="font-size: 0.8rem; align-self: center; margin-right: 0.5rem; color: var(--text-secondary)">Presets:</span>
+                        <button class="preset-btn" onclick="loadExportPreset('INSULIN')">Insulin Infusion Pump</button>
+                        <button class="preset-btn" onclick="loadExportPreset('LOW_RATE')">CPT 99214 Outpatient</button>
+                    </div>
+
+                    <form id="export-form" onsubmit="submitExport(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="Carrier">Carrier Name</label>
+                                <input type="text" id="Carrier" name="Carrier" required value="Carrier A">
+                            </div>
+                            <div class="form-group">
+                                <label for="Year">Year</label>
+                                <input type="number" id="Year" name="Year" required value="2020">
+                            </div>
+                            <div class="form-group">
+                                <label for="Service_category">Service Category</label>
+                                <input type="text" id="Service_category" name="Service category" required value="Diabetes Supplies and Equip">
+                            </div>
+                            <div class="form-group">
+                                <label for="Request">Request Rule Type</label>
+                                <input type="text" id="Request" name="Request" required value="Codes with the highest total number of prior authorization requests during the previous plan year">
+                            </div>
+                            <div class="form-group">
+                                <label for="Code_type">Code Type</label>
+                                <input type="text" id="Code_type" name="Code type" required value="HCPC">
+                            </div>
+                            <div class="form-group">
+                                <label for="Code">Procedure Code</label>
+                                <input type="text" id="Code" name="Code" required value="E0784">
+                            </div>
+                            <div class="form-group">
+                                <label for="Number_of_requests_per_code">Number of Requests Per Code</label>
+                                <input type="number" id="Number_of_requests_per_code" name="Number of requests per code" required value="9">
+                            </div>
+                            <div class="form-group">
+                                <label for="Standard_Avg_response_time">Standard - Avg Response Time</label>
+                                <input type="number" step="any" id="Standard_Avg_response_time" name="Standard - Avg response time" value="25.04">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="Description_of_service">Description of Service</label>
+                                <textarea id="Description_of_service" name="Description of service" required>Ext Amb Infusn Pump Insulin</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="Drug_name">Drug Name</label>
+                                <input type="text" id="Drug_name" name="Drug name" value="NA">
+                            </div>
+                            <div class="form-group">
+                                <label for="Drug_brand_names">Drug Brand Names</label>
+                                <input type="text" id="Drug_brand_names" name="Drug brand names" value="NA">
+                            </div>
+
+                            <button type="submit" class="btn-submit" id="export-btn">
+                                <span class="spinner" id="export-spinner"></span>
+                                Score Aggregate Rate Model
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card" style="position: sticky; top: 100px;">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Prediction Output
+                </div>
+
+                <div class="result-placeholder" id="placeholder">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.3"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                    <div>
+                        <p style="font-weight: 500; font-size: 1.05rem; margin-bottom: 0.25rem;">No Output Yet</p>
+                        <p style="font-size: 0.85rem;">Enter values on the left and submit to score the model.</p>
+                    </div>
+                </div>
+
+                <div class="result-panel" id="result-panel">
+                    <div class="decision-banner" id="decision-banner">
+                        <div class="decision-value" id="decision-val">APPROVED</div>
+                        <div class="decision-label">Model Decision</div>
+                    </div>
+
+                    <div class="result-details" id="clinical-details">
+                        <div class="result-row">
+                            <span class="result-key">Meets Criteria Status</span>
+                            <span class="result-val" id="meets-criteria-val">Yes</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-key">Urgency Mode</span>
+                            <span class="result-val" id="urgency-val">Routine</span>
+                        </div>
+                    </div>
+
+                    <div class="reason-box">
+                        <div class="reason-title">Decision Rationale</div>
+                        <div class="reason-content" id="reason-val">Clinical criteria met: documented conservative treatment history and supporting findings justify the requested service.</div>
+                    </div>
+
+                    <div id="probabilities-section">
+                        <div class="probability-title">Prediction Confidence</div>
+                        <div class="prob-bar-container" id="prob-container">
+                            <!-- Prob rows injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Prior Authorization Prediction Engine • Built for CTS Hackathon Workspace Layout
+    </footer>
+
+    <script>
+        let currentTab = 'clinical';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'clinical') {
+                document.getElementById('clinical-form-panel').style.display = 'block';
+                document.getElementById('export-form-panel').style.display = 'none';
+            } else {
+                document.getElementById('clinical-form-panel').style.display = 'none';
+                document.getElementById('export-form-panel').style.display = 'block';
+            }
+            clearResults();
+        }
+
+        function clearResults() {
+            document.getElementById('placeholder').style.display = 'flex';
+            document.getElementById('result-panel').style.display = 'none';
+        }
+
+        function showLoading(loading, idPrefix) {
+            const btn = document.getElementById(`${idPrefix}-btn`);
+            const spinner = document.getElementById(`${idPrefix}-spinner`);
+            if (loading) {
+                btn.disabled = true;
+                spinner.style.display = 'inline-block';
+            } else {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        function loadClinicalPreset(preset) {
+            if (preset === 'TEST001') {
+                document.getElementById('age').value = 58;
+                document.getElementById('urgency').value = 'Routine';
+                document.getElementById('diagnosis').value = 'Rheumatoid Arthritis';
+                document.getElementById('diagnosis_code').value = 'M06.9';
+                document.getElementById('requested_service').value = 'Adalimumab (Humira) therapy';
+                document.getElementById('procedure_code').value = 'J0135';
+                document.getElementById('provider_specialty').value = 'Rheumatology';
+                document.getElementById('policy_id').value = 'POL100974';
+                document.getElementById('clinical_history').value = '58-year-old patient with rheumatoid arthritis, symptom duration 1 year, no relevant comorbidities noted.';
+                document.getElementById('previous_treatments').value = 'Methotrexate 15mg weekly x3 months; Sulfasalazine';
+                document.getElementById('medications').value = 'Methotrexate 15mg, Folic acid 1mg';
+                document.getElementById('lab_results').value = 'RF positive, anti-CCP positive';
+            } else if (preset === 'ADHD') {
+                document.getElementById('age').value = 57;
+                document.getElementById('urgency').value = 'Routine';
+                document.getElementById('diagnosis').value = 'Attention-Deficit/Hyperactivity Disorder';
+                document.getElementById('diagnosis_code').value = 'F90.0';
+                document.getElementById('requested_service').value = 'Lisdexamfetamine (Vyvanse) 60mg';
+                document.getElementById('procedure_code').value = 'J8499';
+                document.getElementById('provider_specialty').value = 'Psychiatry';
+                document.getElementById('policy_id').value = 'POL101276';
+                document.getElementById('clinical_history').value = '57-year-old patient with attention-deficit/hyperactivity disorder, symptom duration several years, obesity.';
+                document.getElementById('previous_treatments').value = 'None documented';
+                document.getElementById('medications').value = 'Methylphenidate ER 36mg, Atomoxetine 40mg';
+                document.getElementById('lab_results').value = 'Not applicable';
+            } else if (preset === 'KNEE') {
+                document.getElementById('age').value = 81;
+                document.getElementById('urgency').value = 'Routine';
+                document.getElementById('diagnosis').value = 'Chronic Knee Osteoarthritis';
+                document.getElementById('diagnosis_code').value = 'M17.11';
+                document.getElementById('requested_service').value = 'Total Knee Arthroplasty';
+                document.getElementById('procedure_code').value = '27447';
+                document.getElementById('provider_specialty').value = 'Orthopedics';
+                document.getElementById('policy_id').value = 'POL100974';
+                document.getElementById('clinical_history').value = '81-year-old patient with chronic knee osteoarthritis, symptom duration several years, no relevant comorbidities noted.';
+                document.getElementById('previous_treatments').value = 'Weight loss program; Corticosteroid injection x2';
+                document.getElementById('medications').value = 'Tramadol 50mg PRN, Meloxicam 15mg';
+                document.getElementById('lab_results').value = 'X-ray: Kellgren-Lawrence Grade 4';
+            }
+        }
+
+        function loadExportPreset(preset) {
+            if (preset === 'INSULIN') {
+                document.getElementById('Carrier').value = 'Carrier A';
+                document.getElementById('Year').value = 2020;
+                document.getElementById('Service_category').value = 'Diabetes Supplies and Equip';
+                document.getElementById('Request').value = 'Codes with the highest total number of prior authorization requests during the previous plan year';
+                document.getElementById('Code_type').value = 'HCPC';
+                document.getElementById('Code').value = 'E0784';
+                document.getElementById('Number_of_requests_per_code').value = 9;
+                document.getElementById('Standard_Avg_response_time').value = 25.04;
+                document.getElementById('Description_of_service').value = 'Ext Amb Infusn Pump Insulin';
+                document.getElementById('Drug_name').value = 'NA';
+                document.getElementById('Drug_brand_names').value = 'NA';
+            } else if (preset === 'LOW_RATE') {
+                document.getElementById('Carrier').value = 'Carrier A';
+                document.getElementById('Year').value = 2020;
+                document.getElementById('Service_category').value = 'Outpatient Med-Surg';
+                document.getElementById('Request').value = 'Codes with the highest total number of prior prior authorization requests during the previous plan year';
+                document.getElementById('Code_type').value = 'CPT';
+                document.getElementById('Code').value = '99214';
+                document.getElementById('Number_of_requests_per_code').value = 198;
+                document.getElementById('Standard_Avg_response_time').value = 34.0;
+                document.getElementById('Description_of_service').value = 'Office or other outpatient visit for evaluation and management...';
+                document.getElementById('Drug_name').value = 'NA';
+                document.getElementById('Drug_brand_names').value = 'NA';
+            }
+        }
+
+        function renderResults(data, mode) {
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('result-panel').style.display = 'block';
+
+            const banner = document.getElementById('decision-banner');
+            const decisionVal = document.getElementById('decision-val');
+            const reasonVal = document.getElementById('reason-val');
+            const clinicalDetails = document.getElementById('clinical-details');
+            const probContainer = document.getElementById('prob-container');
+
+            probContainer.innerHTML = '';
+
+            if (mode === 'clinical') {
+                clinicalDetails.style.display = 'flex';
+                document.getElementById('meets-criteria-val').innerText = data.meets_criteria;
+                document.getElementById('urgency-val').innerText = document.getElementById('urgency').value;
+
+                decisionVal.innerText = data.decision;
+                reasonVal.innerText = data.decision_reason;
+
+                // Adjust color classes
+                banner.className = 'decision-banner';
+                if (data.decision === 'Approved') banner.classList.add('approved');
+                else if (data.decision === 'Denied') banner.classList.add('denied');
+                else banner.classList.add('pending');
+
+                // Render confidence bars if available
+                if (data.probabilities) {
+                    document.getElementById('probabilities-section').style.display = 'block';
+                    // Find the predicted class probability
+                    const classes = Object.keys(data.probabilities);
+                    classes.sort((a, b) => data.probabilities[b] - data.probabilities[a]);
+                    // Show top 3 reasons/classes
+                    classes.slice(0, 3).forEach(c => {
+                        const prob = data.probabilities[c];
+                        const row = createProbabilityRow(c, prob);
+                        probContainer.appendChild(row);
+                    });
+                } else {
+                    document.getElementById('probabilities-section').style.display = 'none';
+                }
+            } else {
+                clinicalDetails.style.display = 'none';
+                decisionVal.innerText = data.predicted_decision;
+                reasonVal.innerText = `Decision predicted based on carrier-level aggregate prior auth metrics. Expected approval threshold rate: >=50%.`;
+
+                banner.className = 'decision-banner';
+                if (data.predicted_decision === 'approved') banner.classList.add('approved');
+                else banner.classList.add('denied');
+
+                if (data.probabilities) {
+                    document.getElementById('probabilities-section').style.display = 'block';
+                    Object.entries(data.probabilities).forEach(([cls, prob]) => {
+                        const row = createProbabilityRow(cls, prob);
+                        probContainer.appendChild(row);
+                    });
+                } else {
+                    document.getElementById('probabilities-section').style.display = 'none';
+                }
+            }
+        }
+
+        function createProbabilityRow(name, prob) {
+            const container = document.createElement('div');
+            container.className = 'prob-row';
+
+            const pct = (prob * 100).toFixed(1) + '%';
+
+            container.innerHTML = `
+                <div class="prob-label-row">
+                    <span class="prob-name">${name}</span>
+                    <span class="prob-val">${pct}</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            `;
+            setTimeout(() => {
+                container.querySelector('.progress-fill').style.width = (prob * 100) + '%';
+            }, 50);
+
+            return container;
+        }
+
+        async function submitClinical(e) {
+            e.preventDefault();
+            showLoading(true, 'clinical');
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/predict_clinical', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    renderResults(result, 'clinical');
+                } else {
+                    alert('Prediction Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Connection Error: ' + err.message);
+            } finally {
+                showLoading(false, 'clinical');
+            }
+        }
+
+        async function submitExport(e) {
+            e.preventDefault();
+            showLoading(true, 'export');
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/predict_export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    renderResults(result, 'export');
+                } else {
+                    alert('Prediction Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Connection Error: ' + err.message);
+            } finally {
+                showLoading(false, 'export');
+            }
+        }
+    </script>
+</body>
+</html>
