@@ -169,7 +169,7 @@ def predict_clinical():
         
         # Map reason to meets_criteria and decision using the deterministic mapping discovered
         meets_criteria = "Partial"
-        decision = "Denied"
+        decision = "In Review"
         
         if "Clinical criteria met" in reason:
             meets_criteria = "Yes"
@@ -182,7 +182,7 @@ def predict_clinical():
             decision = "Pending Additional Information"
         elif "Approved with conditions" in reason or "Approved on the basis of clinical urgency" in reason:
             meets_criteria = "Partial"
-            decision = "Approved"
+            decision = "In Review"
         
         probs = {}
         if hasattr(clinical_model.named_steps["classifier"], "predict_proba"):
