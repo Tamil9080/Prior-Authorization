@@ -39,3 +39,6 @@ synthea_csv/
 # Local IDE configs
 .vscode/
 .idea/
+
+# Model artifacts
+organized_scene/models/*.joblib
