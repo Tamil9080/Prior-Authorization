@@ -57,15 +57,26 @@ The project is organized into two primary layers: root data extraction scripts a
 
 ## 🚦 Getting Started
 
-### 1. Prerequisites
-Ensure you have **Python 3.10+** installed on your system.
-
-### 2. Installation
-Install the project dependencies using `pip`:
-
-```powershell
-pip install pandas scikit-learn joblib flask
+### 1. Clone the Repository
+Clone the repository and navigate into the workspace root directory:
+```bash
+git clone https://github.com/Tamil9080/Prior-Authorization.git
+cd Prior-Authorization
 ```
+
+### 2. Prerequisites & Installation
+Ensure you have **Python 3.10+** installed. Then install the project dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Running the Dashboard Portal
+Start the Flask application from the root directory:
+```bash
+python organized_scene/scripts/app.py
+```
+> [!NOTE]
+> **First Run Model Training**: Because the serialized `.joblib` model binaries exceed GitHub's file size limit, they are ignored under `.gitignore`. On the first startup, the Flask backend will automatically preprocess the raw clinical datasets and train both the Clinical and Review Random Forest classifiers. This takes **less than 3 seconds** to complete, after which the portal is fully operational at [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
 ---
 
