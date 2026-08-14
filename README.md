@@ -151,4 +151,4 @@ python organized_scene/scripts/app.py
 * **Two Interactive Modes**: Switch between predicting patient-level clinical decisions and carrier-level aggregate rates.
 * **Preset Loaders**: Load pre-configured sample cases (e.g., Rheumatoid Arthritis, ADHD step-therapy failure, Osteoarthritis) with a single click.
 * **Probability Visualizer**: Renders beautiful progress bars showing the class probabilities (confidence) for each prediction result.
-* **Deterministic Resolution**: Maps clinical models' classification outputs directly to final status resolutions (`Approved`, `Denied`, or `Pending Additional Information`).
+* **Deterministic Resolution**: Maps clinical models' classification outputs directly to final status resolutions (`Approved`, `Denied`, `In Review`, or `Pending Additional Information`).
