@@ -6,7 +6,7 @@ import joblib
 import pandas as pd
 
 
-ROOT = Path(r"d:\cts hackthon\new1\organized_scene")
+ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = ROOT / "models" / "random_forest_model.joblib"
 
 

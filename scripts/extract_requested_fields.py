@@ -1,9 +1,11 @@
 import os
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
 
-BASE = r"d:\cts hackthon\new1\synthea_csv\csv"
-OUT = r"d:\cts hackthon\new1\extracted_requested_fields.csv"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+BASE = str(PROJECT_ROOT / "synthea_csv" / "csv")
+OUT = str(PROJECT_ROOT / "extracted_requested_fields.csv")
 REF_DATE = pd.to_datetime('2021-11-01')
 
 def read_csv(name):

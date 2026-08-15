@@ -1,21 +1,32 @@
 import os
 import sys
 import re
+import json
 from pathlib import Path
 import joblib
 import pandas as pd
 import numpy as np
 from sklearn.metrics import accuracy_score, classification_report
 
-ROOT = Path(r"d:\cts hackthon\new1\organized_scene")
+script_dir = Path(__file__).resolve().parent
+ROOT = script_dir.parent  # organized_scene
+PROJECT_ROOT = ROOT.parent  # workspace root
+
 EXPORT_MODEL_PATH = ROOT / "models" / "random_forest_model.joblib"
 CLINICAL_MODEL_PATH = ROOT / "models" / "clinical_rf_model.joblib"
 REVIEW_MODEL_PATH = ROOT / "models" / "review_rf_model.joblib"
 
 EXPORT_DATA_PATH = ROOT / "raw" / "export.csv"
 CLINICAL_DATA_PATH = ROOT / "raw" / "clinical_pa_test_data.csv"
-REVIEW_DATA_PATH = Path(r"d:\cts hackthon\new1\clinical_pa_training_data_with_review.csv")
-RULE_DATA_PATH = Path(r"d:\cts hackthon\new1\rule_based_training_data.csv")
+REVIEW_DATA_PATH = PROJECT_ROOT / "clinical_pa_training_data_with_review.csv"
+RULE_DATA_PATH = PROJECT_ROOT / "rule_based_training_data.csv"
+
+# Add script_dir to sys.path to import rule_engine and app correctly
+if str(script_dir) not in sys.path:
+    sys.path.append(str(script_dir))
+
+import rule_engine
+from app import populate_mock_clinical_fields
 
 def parse_rate(value: object) -> float:
     text = str(value).strip()
@@ -100,7 +111,7 @@ def evaluate_clinical_model():
     df['age'] = pd.to_numeric(df['age'], errors='coerce').fillna(df['age'].median() if not df['age'].isnull().all() else 45)
     
     X = df[num_cols + cat_cols + text_cols]
-    y_true = df['decision_reason']
+    y_true = df['decision'].fillna("missing").astype(str).str.strip()
     
     y_pred = predict_in_batches(model, X)
     acc = accuracy_score(y_true, y_pred)
@@ -116,11 +127,13 @@ def evaluate_review_model():
     
     df2['clinical_history'] = df2['feature_summary'].fillna("None").astype(str)
     df2['previous_treatments'] = df2['feature_summary'].fillna("None").astype(str)
-    df2['medications'] = "None"
-    df2['lab_results'] = "None"
+    
+    # Fix dataset merge leakage
+    df2 = populate_mock_clinical_fields(df2)
     
     df = pd.concat([df1, df2], ignore_index=True)
-    df.loc[df['meets_criteria'] == 'Partial', 'decision'] = 'In Review'
+    
+    # Removed label corruption overwrite logic
     
     text_cols = ['diagnosis', 'requested_service', 'clinical_history', 'previous_treatments', 'medications', 'lab_results']
     cat_cols = ['diagnosis_code', 'procedure_code', 'provider_specialty', 'urgency', 'policy_id']
@@ -135,14 +148,36 @@ def evaluate_review_model():
     X = df[num_cols + cat_cols + text_cols]
     y_true = df[['decision', 'meets_criteria', 'decision_reason']]
     
-    y_pred = predict_in_batches(model, X)
+    # Predict decision using single-output model
+    y_pred_dec = predict_in_batches(model, X)
     
-    results = {}
-    for i, col in enumerate(['decision', 'meets_criteria', 'decision_reason']):
-        acc = accuracy_score(y_true[col].astype(str), y_pred[:, i].astype(str))
-        rep = classification_report(y_true[col].astype(str), y_pred[:, i].astype(str), output_dict=True)
-        results[col] = (acc, rep)
+    # Derive meets_criteria and decision_reason using deterministic rule engine
+    y_pred_mc = []
+    y_pred_reas = []
+    for idx in df.index:
+        row_dict = df.loc[idx].to_dict()
+        pred_dec = y_pred_dec[idx]
+        mc, reas = rule_engine.derive_criteria_and_reason(row_dict, pred_dec)
+        y_pred_mc.append(mc)
+        y_pred_reas.append(reas)
         
+    results = {}
+    
+    # decision
+    acc_dec = accuracy_score(y_true['decision'].astype(str).str.strip(), y_pred_dec)
+    rep_dec = classification_report(y_true['decision'].astype(str).str.strip(), y_pred_dec, output_dict=True)
+    results['decision'] = (acc_dec, rep_dec)
+    
+    # meets_criteria
+    acc_mc = accuracy_score(y_true['meets_criteria'].astype(str).str.strip(), y_pred_mc)
+    rep_mc = classification_report(y_true['meets_criteria'].astype(str).str.strip(), y_pred_mc, output_dict=True)
+    results['meets_criteria'] = (acc_mc, rep_mc)
+    
+    # decision_reason
+    acc_reas = accuracy_score(y_true['decision_reason'].astype(str).str.strip(), y_pred_reas)
+    rep_reas = classification_report(y_true['decision_reason'].astype(str).str.strip(), y_pred_reas, output_dict=True)
+    results['decision_reason'] = (acc_reas, rep_reas)
+    
     return results
 
 def main():
@@ -151,7 +186,7 @@ def main():
         clin_acc, clin_rep = evaluate_clinical_model()
         rev_results = evaluate_review_model()
         
-        report_path = Path(r"C:\Users\hp laptop\.gemini\antigravity-ide\brain\542b742b-1fc9-4552-8ca6-40352744ad6f\evaluation_report.md")
+        report_path = ROOT / "predictions" / "evaluation_report.md"
         report_path.parent.mkdir(parents=True, exist_ok=True)
         
         with open(report_path, "w", encoding="utf-8") as f:
@@ -164,13 +199,13 @@ def main():
             f.write(f"* **Macro Recall**: {exp_rep['macro avg']['recall']:.4f}\n")
             f.write(f"* **Macro F1-Score**: {exp_rep['macro avg']['f1-score']:.4f}\n\n")
             
-            f.write("## 2. Clinical Patient-Level Model\n")
+            f.write("## 2. Clinical Patient-Level Model (Target Leakage Fixed)\n")
             f.write(f"* **Accuracy**: {clin_acc:.4f}\n")
             f.write(f"* **Macro Precision**: {clin_rep['macro avg']['precision']:.4f}\n")
             f.write(f"* **Macro Recall**: {clin_rep['macro avg']['recall']:.4f}\n")
             f.write(f"* **Macro F1-Score**: {clin_rep['macro avg']['f1-score']:.4f}\n\n")
             
-            f.write("## 3. Review Decision Model (Multi-Output)\n")
+            f.write("## 3. Review Decision Model (Target Leakage & Merge Leakage Fixed)\n")
             for col, (acc, rep) in rev_results.items():
                 f.write(f"### Target: `{col}`\n")
                 f.write(f"* **Accuracy**: {acc:.4f}\n")

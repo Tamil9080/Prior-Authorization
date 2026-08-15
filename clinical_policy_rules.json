@@ -1,0 +1,74 @@
+{
+  "policies": [
+    {
+      "policy_number": "MHI-ORTHO-014",
+      "name": "Lumbar Spine MRI (without contrast)",
+      "specialty": "Orthopedics / Neurology",
+      "diagnosis_codes": ["M51.26", "M54.5", "M51.16"],
+      "procedure_codes": ["72148"]
+    },
+    {
+      "policy_number": "MHI-RHEUM-007",
+      "name": "Biologic Disease-Modifying Antirheumatic Drugs (Adalimumab and similar agents)",
+      "specialty": "Rheumatology",
+      "diagnosis_codes": ["M06.9", "M05.79"],
+      "procedure_codes": ["J0135"]
+    },
+    {
+      "policy_number": "MHI-ENDO-021",
+      "name": "Continuous Glucose Monitor (CGM)",
+      "specialty": "Endocrinology",
+      "diagnosis_codes": ["E11.9", "E10.9"],
+      "procedure_codes": ["E2103"]
+    },
+    {
+      "policy_number": "MHI-NEURO-009",
+      "name": "CGRP Inhibitor Therapy for Chronic Migraine (e.g., Erenumab)",
+      "specialty": "Neurology",
+      "diagnosis_codes": ["G43.709"],
+      "procedure_codes": ["J3032"]
+    },
+    {
+      "policy_number": "MHI-PULM-011",
+      "name": "CPAP Therapy for Obstructive Sleep Apnea",
+      "specialty": "Pulmonology",
+      "diagnosis_codes": ["G47.33"],
+      "procedure_codes": ["E0601"]
+    },
+    {
+      "policy_number": "MHI-PSYCH-018",
+      "name": "Transcranial Magnetic Stimulation (TMS) for Major Depressive Disorder",
+      "specialty": "Psychiatry",
+      "diagnosis_codes": ["F33.1", "F32.9"],
+      "procedure_codes": ["90867"]
+    },
+    {
+      "policy_number": "MHI-CARD-003",
+      "name": "Diagnostic Cardiac Catheterization",
+      "specialty": "Cardiology",
+      "diagnosis_codes": ["I25.10"],
+      "procedure_codes": ["93458"]
+    },
+    {
+      "policy_number": "MHI-ORTHO-022",
+      "name": "Total Knee Arthroplasty (Knee Replacement)",
+      "specialty": "Orthopedics",
+      "diagnosis_codes": ["M17.11", "M17.12"],
+      "procedure_codes": ["27447"]
+    },
+    {
+      "policy_number": "MHI-PSYCH-005",
+      "name": "Stimulant Medication for ADHD (Lisdexamfetamine and similar)",
+      "specialty": "Psychiatry",
+      "diagnosis_codes": ["F90.0", "F90.1"],
+      "procedure_codes": ["J8499"]
+    },
+    {
+      "policy_number": "MHI-GI-016",
+      "name": "Biologic Infusion Therapy for Crohn's Disease (Infliximab and similar)",
+      "specialty": "Gastroenterology",
+      "diagnosis_codes": ["K50.90", "K50.10"],
+      "procedure_codes": ["J1745"]
+    }
+  ]
+}

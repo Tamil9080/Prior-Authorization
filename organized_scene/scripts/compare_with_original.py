@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 
-ROOT = Path(r"d:\cts hackthon\new1\organized_scene")
+ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = ROOT / "models" / "random_forest_model.joblib"
 
 

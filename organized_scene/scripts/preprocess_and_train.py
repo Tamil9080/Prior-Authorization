@@ -14,7 +14,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
 
-ROOT = Path(r"d:\cts hackthon\new1\organized_scene")
+ROOT = Path(__file__).resolve().parent.parent
 RAW_DATA = ROOT / "raw" / "export.csv"
 PROCESSED_DATA = ROOT / "processed" / "preprocessed_data.csv"
 MODEL_DIR = ROOT / "models"

@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicare Prior Authorization Triage Portal & Policy Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #131a2c;
+            --bg-card: rgba(22, 30, 49, 0.7);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+            --approve: #10b981;
+            --approve-glow: rgba(16, 185, 129, 0.15);
+            --deny: #ef4444;
+            --deny-glow: rgba(239, 68, 68, 0.15);
+            --pend: #f59e0b;
+            --pend-glow: rgba(245, 158, 11, 0.15);
+            --insufficient: #d97706;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-title: 'Outfit', sans-serif;
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        header {
+            background-color: rgba(19, 26, 44, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title-container svg {
+            color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-weight: 600;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #ffffff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tab-container {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem;
+            border-radius: 8px;
+            gap: 0.25rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 1.25rem;
+            font-family: var(--font-main);
+            font-weight: 550;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        main {
+            padding: 2.5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .card-title {
+            font-family: var(--font-title);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .card-title svg {
+            color: var(--primary);
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .preset-btn {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background-color: var(--primary-glow);
+            border-color: var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            grid-column: span 2;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.85rem;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Result Panel Styling */
+        .result-placeholder {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-secondary);
+            gap: 1rem;
+        }
+
+        .result-panel {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .decision-banner {
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .decision-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.12;
+            z-index: 0;
+        }
+
+        .decision-banner.approve {
+            background-color: var(--approve-glow);
+            border: 1px solid var(--approve);
+        }
+        .decision-banner.approve .decision-value {
+            color: var(--approve);
+        }
+        .decision-banner.approve::before {
+            background-color: var(--approve);
+        }
+
+        .decision-banner.deny {
+            background-color: var(--deny-glow);
+            border: 1px solid var(--deny);
+        }
+        .decision-banner.deny .decision-value {
+            color: var(--deny);
+        }
+        .decision-banner.deny::before {
+            background-color: var(--deny);
+        }
+
+        .decision-banner.pend {
+            background-color: var(--pend-glow);
+            border: 1px solid var(--pend);
+        }
+        .decision-banner.pend .decision-value {
+            color: var(--pend);
+        }
+        .decision-banner.pend::before {
+            background-color: var(--pend);
+        }
+
+        .decision-value {
+            font-family: var(--font-title);
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            z-index: 1;
+            text-shadow: 0 0 16px currentColor;
+        }
+
+        .decision-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            z-index: 1;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .info-key {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-val {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-track {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px var(--primary);
+        }
+
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .rule-table th, .rule-table td {
+            padding: 0.65rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rule-table th {
+            color: var(--text-secondary);
+            font-weight: 550;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .badge.met {
+            background-color: var(--approve-glow);
+            color: var(--approve);
+            border: 1px solid var(--approve);
+        }
+
+        .badge.not_met {
+            background-color: var(--deny-glow);
+            color: var(--deny);
+            border: 1px solid var(--deny);
+        }
+
+        .badge.insufficient {
+            background-color: var(--pend-glow);
+            color: var(--pend);
+            border: 1px solid var(--pend);
+        }
+
+        .evidence-box {
+            background-color: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 160px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .citation-item {
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .citation-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .citation-text {
+            color: var(--text-primary);
+            font-style: italic;
+            margin-bottom: 0.25rem;
+        }
+
+        .citation-meta {
+            font-size: 0.7rem;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .disclaimer-card {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: var(--pend);
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .review-section {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .review-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: none;
+            color: var(--text-primary);
+        }
+
+        .btn-action.approve-act {
+            border-color: var(--approve);
+            background-color: var(--approve-glow);
+            color: var(--approve);
+        }
+        .btn-action.approve-act:hover {
+            background-color: var(--approve);
+            color: #ffffff;
+        }
+
+        .btn-action.deny-act {
+            border-color: var(--deny);
+            background-color: var(--deny-glow);
+            color: var(--deny);
+        }
+        .btn-action.deny-act:hover {
+            background-color: var(--deny);
+            color: #ffffff;
+        }
+
+        .btn-action.pend-act {
+            border-color: var(--pend);
+            background-color: var(--pend-glow);
+            color: var(--pend);
+        }
+        .btn-action.pend-act:hover {
+            background-color: var(--pend);
+            color: #ffffff;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-container">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <h1>Medicare Prior Authorization Companion</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="dashboard-grid">
+            
+            <!-- Left Side Forms -->
+            <div>
+                <!-- Clinical Form -->
+                <div id="clinical-form-panel" class="card">
+                    <div class="card-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        Triage Authorization Form
+                    </div>
+
+                    <div class="preset-buttons">
+                        <span style="font-size: 0.8rem; align-self: center; margin-right: 0.5rem; color: var(--text-secondary)">Case Presets:</span>
+                        <button class="preset-btn" onclick="loadClinicalPreset('OSA')">Obstructive Sleep Apnea (CPAP)</button>
+                        <button class="preset-btn" onclick="loadClinicalPreset('KNEE')">Knee Osteoarthritis (TKA)</button>
+                        <button class="preset-btn" onclick="loadClinicalPreset('MDD')">Depression (rTMS)</button>
+                        <button class="preset-btn" onclick="loadClinicalPreset('MIGRAINE')">Chronic Migraine (CGRP)</button>
+                    </div>
+
+                    <form id="clinical-form" onsubmit="submitClinical(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="patient_id">Patient ID</label>
+                                <input type="text" id="patient_id" name="patient_id" required value="PAT102948">
+                            </div>
+                            <div class="form-group">
+                                <label for="patient_name">Patient Name</label>
+                                <input type="text" id="patient_name" name="patient_name" value="Eleanor Vance">
+                            </div>
+                            <div class="form-group">
+                                <label for="age">Age</label>
+                                <input type="number" id="age" name="age" required value="54">
+                            </div>
+                            <div class="form-group">
+                                <label for="diagnosis_code">Diagnosis ICD-10 Code</label>
+                                <input type="text" id="diagnosis_code" name="diagnosis_code" required value="G47.33">
+                            </div>
+                            <div class="form-group">
+                                <label for="service_code">Service CPT/HCPCS Code</label>
+                                <input type="text" id="service_code" name="service_code" required value="E0601">
+                            </div>
+                            <div class="form-group">
+                                <label for="provider_specialty">Provider Specialty</label>
+                                <input type="text" id="provider_specialty" name="provider_specialty" required value="Pulmonology">
+                            </div>
+                            <div class="form-group">
+                                <label for="urgency">Urgency Level</label>
+                                <select id="urgency" name="urgency">
+                                    <option value="Routine">Routine (Within 5-7 days)</option>
+                                    <option value="Urgent">Urgent (Within 24-72 hours)</option>
+                                    <option value="Emergent">Emergent (Immediate / Concurrent)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="plan_type">Plan Type</label>
+                                <select id="plan_type" name="plan_type">
+                                    <option value="PPO">PPO (Preferred Provider Org)</option>
+                                    <option value="HMO">HMO (Health Maint Org)</option>
+                                    <option value="EPO">EPO (Exclusive Provider Org)</option>
+                                    <option value="POS">POS (Point of Service)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="network_status">Network Status</label>
+                                <select id="network_status" name="network_status">
+                                    <option value="In-Network">In-Network</option>
+                                    <option value="Out-of-Network">Out-of-Network</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pcp_referral">PCP Referral Status</label>
+                                <select id="pcp_referral" name="pcp_referral">
+                                    <option value="Yes">Yes, Referral on file</option>
+                                    <option value="No">No / Not Applicable</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="diagnosis">Diagnosis Description</label>
+                                <input type="text" id="diagnosis" name="diagnosis" value="Obstructive Sleep Apnea">
+                            </div>
+                            <div class="form-group">
+                                <label for="service_description">Service Description</label>
+                                <input type="text" id="service_description" name="service_description" value="Continuous Positive Airway Pressure (CPAP) device">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="clinical_history">Clinical History Notes</label>
+                                <textarea id="clinical_history" name="clinical_history" required>54-year-old patient with symptoms of severe snoring, choking episodes during sleep, and excessive daytime sleepiness. Neck circumference 17.5 inches.</textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="previous_treatment">Previous Treatments Tried</label>
+                                <textarea id="previous_treatment" name="previous_treatment" required>Positional therapy; Weight loss counseling</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="treatment_duration">Trial Duration (Weeks)</label>
+                                <input type="number" id="treatment_duration" name="treatment_duration" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label for="medications">Active Medications</label>
+                                <input type="text" id="medications" name="medications" value="None reported">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="lab_results">Supporting Lab/Imaging Results</label>
+                                <textarea id="lab_results" name="lab_results" required>Diagnostic sleep study: polysomnogram confirms Apnea-Hypopnea Index (AHI) of 32 (severe OSA).</textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn-submit" id="clinical-btn">
+                                <span class="spinner" id="clinical-spinner"></span>
+                                Run Triage Evaluator
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+
+            <!-- Right Side Results -->
+            <div class="card" style="position: sticky; top: 90px;">
+                <div class="card-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Triage Output & Evidence
+                </div>
+
+                <!-- Empty state placeholder -->
+                <div class="result-placeholder" id="placeholder">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.3"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                    <div>
+                        <p style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Triage Results Pending</p>
+                        <p style="font-size: 0.85rem; max-width: 320px;">Populate the patient case details on the left, then click Run Triage to trigger rule evaluation and ML scoring.</p>
+                    </div>
+                </div>
+
+                <!-- Active results panel -->
+                <div class="result-panel" id="result-panel">
+                    
+                    <!-- Final triage decision banner -->
+                    <div class="decision-banner" id="decision-banner">
+                        <div class="decision-value" id="decision-val">PEND</div>
+                        <div class="decision-label" id="decision-lbl">FINAL TRIAGE RECOMMENDATION</div>
+                    </div>
+
+                    <!-- Details of patient and matched policy -->
+                    <div class="info-grid" id="clinical-info-panel">
+                        <div class="info-item">
+                            <span class="info-key">Patient Name</span>
+                            <span class="info-val" id="res-patient-name">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-key">Request ID</span>
+                            <span class="info-val" id="res-request-id">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-key">Medicare Policy ID</span>
+                            <span class="info-val" id="res-policy-id">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-key">Policy Title</span>
+                            <span class="info-val" id="res-policy-title">-</span>
+                        </div>
+                    </div>
+
+                    <!-- ML scoring metrics -->
+                    <div>
+                        <div class="section-title">
+                            <span>Random Forest Classifier Prediction</span>
+                            <span id="ml-confidence-pct" style="color: var(--primary);">0%</span>
+                        </div>
+                        <div class="progress-track" style="margin-bottom: 0.5rem;">
+                            <div class="progress-fill" id="ml-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: right;" id="ml-decision-text">
+                            Classifier predicted APPROVED with 0% confidence
+                        </div>
+                    </div>
+
+                    <!-- Rule by Rule checklist -->
+                    <div id="rule-section">
+                        <div class="section-title">LCD Coverage Criteria Evaluation</div>
+                        <table class="rule-table">
+                            <thead>
+                                <tr>
+                                    <th>Required Rule Check</th>
+                                    <th style="width: 100px; text-align: right;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rule-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Explainable rationale box -->
+                    <div class="review-section" style="border-left: 3px solid var(--primary);">
+                        <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Triage Summary Explanation</div>
+                        <div style="font-size: 0.85rem; color: var(--text-primary);" id="res-reason">-</div>
+                    </div>
+
+                    <!-- Semantic citations from policy PDF -->
+                    <div>
+                        <div class="section-title">Policy Evidence / Citations (Local RAG)</div>
+                        <div class="evidence-box" id="citations-container">
+                            <!-- Dynamic citations -->
+                        </div>
+                    </div>
+
+                    <!-- Human in the Loop reviews -->
+                    <div class="review-section" id="human-review-box">
+                        <div style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Human-in-the-Loop Utilization Review</div>
+                        <div class="review-buttons">
+                            <button class="btn-action approve-act" onclick="submitReview('Approved')">Approve Case</button>
+                            <button class="btn-action deny-act" onclick="submitReview('Denied')">Deny Case</button>
+                            <button class="btn-action pend-act" onclick="submitReview('Pending Additional Information')">Request Info</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Disclaimer Block -->
+        <div class="disclaimer-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+                <p style="font-weight: 600; margin-bottom: 0.25rem;">Safety Disclaimer & Decision-Support Notice</p>
+                <p>This system is an AI-assisted utilization-management decision-support tool. It does not replace the professional clinical judgment of a qualified medical, insurance, or utilization-management professional. Final prior-authorization determinations must be audited and reviewed according to the applicable payer coverage policy, organizational procedures, and guidelines.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Medicare Prior Authorization Triage Companion & Policy Database Gateway • CMS MCD Weekly Feed
+    </footer>
+
+    <script>
+        let currentRequestId = '';
+
+        function showLoading(show, type) {
+            const spinner = document.getElementById(type + '-spinner');
+            const btn = document.getElementById(type + '-btn');
+            if (show) {
+                spinner.style.display = 'inline-block';
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            } else {
+                spinner.style.display = 'none';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        const presets = {
+            OSA: {
+                patient_id: "PAT402837",
+                patient_name: "Eleanor Vance",
+                age: 54,
+                diagnosis_code: "G47.33",
+                service_code: "E0601",
+                provider_specialty: "Pulmonology",
+                urgency: "Routine",
+                diagnosis: "Obstructive Sleep Apnea",
+                service_description: "Continuous Positive Airway Pressure (CPAP) device",
+                clinical_history: "54-year-old patient with symptoms of severe snoring, choking episodes during sleep, and excessive daytime sleepiness. Neck circumference 17.5 inches.",
+                previous_treatment: "Positional therapy; Weight loss counseling",
+                treatment_duration: 12,
+                medications: "None reported",
+                lab_results: "Diagnostic sleep study: polysomnogram confirms Apnea-Hypopnea Index (AHI) of 32 (severe OSA)."
+            },
+            KNEE: {
+                patient_id: "PAT938210",
+                patient_name: "Robert Shaw",
+                age: 72,
+                diagnosis_code: "M17.11",
+                service_code: "27447",
+                provider_specialty: "Orthopedics",
+                urgency: "Routine",
+                diagnosis: "Unilateral Osteoarthritis, Right Knee",
+                service_description: "Total Knee Arthroplasty (Knee Replacement)",
+                clinical_history: "72-year-old patient with severe right knee pain, functional limitation impacting stairs, walking, and transfers. Knee instability reported.",
+                previous_treatment: "Physical therapy x12 weeks; Corticosteroid joint injection x2; Meloxicam 15mg",
+                treatment_duration: 16,
+                medications: "Meloxicam 15mg, Tramadol 50mg PRN",
+                lab_results: "Knee radiography report: severe joint space narrowing, subchondral sclerosis, osteophytes consistent with Kellgren-Lawrence Grade 4 osteoarthritis."
+            },
+            MDD: {
+                patient_id: "PAT302912",
+                patient_name: "Miriam Hopkins",
+                age: 41,
+                diagnosis_code: "F33.1",
+                service_code: "90867",
+                provider_specialty: "Psychiatry",
+                urgency: "Routine",
+                diagnosis: "Major Depressive Disorder, Recurrent, Moderate",
+                service_description: "rTMS mapping and delivery sessions",
+                clinical_history: "41-year-old patient diagnosed with severe major depressive disorder. Poor response to multiple lines of pharmacological therapy.",
+                previous_treatment: "Sertraline 200mg (failed); Venlafaxine 150mg (failed); Cognitive Behavioral Therapy",
+                treatment_duration: 24,
+                medications: "Bupropion 150mg daily",
+                lab_results: "Psychiatric evaluation: recurrent severe depressive episodes, PHQ-9 score 22. No history of seizures or metallic implants."
+            },
+            MIGRAINE: {
+                patient_id: "PAT102948",
+                patient_name: "Liam Neeson",
+                age: 39,
+                diagnosis_code: "G43.709",
+                service_code: "J3032",
+                provider_specialty: "Neurology",
+                urgency: "Routine",
+                diagnosis: "Chronic Migraine, intractable",
+                service_description: "Erenumab (Aimovig) injection, 70 mg",
+                clinical_history: "39-year-old patient experiencing severe chronic migraine headaches averaging 18 days per month for the past 6 months.",
+                previous_treatment: "Propranolol trial (failed due to bradycardia); Topiramate trial (failed due to cognitive side effects)",
+                treatment_duration: 16,
+                medications: "Sumatriptan 100mg PRN for acute attacks",
+                lab_results: "Neurology exam: chronic migraines documented, MRI brain normal. Patient keeps detailed headache diary."
+            }
+        };
+
+        function loadClinicalPreset(key) {
+            const data = presets[key];
+            if (!data) return;
+            
+            for (const [k, v] of Object.entries(data)) {
+                const el = document.getElementById(k);
+                if (el) el.value = v;
+            }
+        }
+
+
+
+        function showLoading(show, type) {
+            const spinner = document.getElementById(type + '-spinner');
+            const btn = document.getElementById(type + '-btn');
+            if (show) {
+                spinner.style.display = 'inline-block';
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            } else {
+                spinner.style.display = 'none';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        async function submitClinical(e) {
+            e.preventDefault();
+            showLoading(true, 'clinical');
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/prior-authorization/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    renderTriageResults(result);
+                } else {
+                    alert('Check Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Connection Error: ' + err.message);
+            } finally {
+                showLoading(false, 'clinical');
+            }
+        }
+
+
+
+        function renderTriageResults(data) {
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('result-panel').style.display = 'flex';
+            document.getElementById('clinical-info-panel').style.display = 'grid';
+            document.getElementById('rule-section').style.display = 'block';
+            document.getElementById('human-review-box').style.display = 'flex';
+
+            currentRequestId = data.request_id;
+            
+            // Set text values
+            document.getElementById('res-patient-name').innerText = document.getElementById('patient_name').value || 'Eleanor Vance';
+            document.getElementById('res-request-id').innerText = data.request_id;
+            document.getElementById('res-policy-id').innerText = data.policy_id;
+            document.getElementById('res-policy-title').innerText = data.policy_title;
+            document.getElementById('res-reason').innerText = data.reason;
+
+            // Set final recommendation banner
+            const banner = document.getElementById('decision-banner');
+            const decVal = document.getElementById('decision-val');
+            decVal.innerText = data.final_recommendation.toUpperCase();
+            
+            banner.className = 'decision-banner';
+            if (data.final_recommendation === 'APPROVE') banner.classList.add('approve');
+            else if (data.final_recommendation === 'DENY') banner.classList.add('deny');
+            else banner.classList.add('pend');
+
+            // Render ML prediction confidence
+            const confPercent = (data.ml_confidence * 100).toFixed(1) + '%';
+            document.getElementById('ml-confidence-pct').innerText = confPercent;
+            document.getElementById('ml-progress-fill').style.width = confPercent;
+            document.getElementById('ml-decision-text').innerText = `Classifier predicted ${data.ml_prediction} with ${confPercent} confidence`;
+
+            // Render rule evaluations
+            const tbody = document.getElementById('rule-table-body');
+            tbody.innerHTML = '';
+            
+            data.rules.forEach(r => {
+                const tr = document.createElement('tr');
+                const badgeClass = r.status.toLowerCase();
+                
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 600; margin-bottom: 0.15rem;">${r.rule}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);">${r.evidence}</div>
+                    </td>
+                    <td style="text-align: right; vertical-align: middle;">
+                        <span class="badge ${badgeClass}">${r.status.replace('_', ' ')}</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Render local RAG citations
+            const citationsContainer = document.getElementById('citations-container');
+            citationsContainer.innerHTML = '';
+            
+            if (data.evidence_chunks && data.evidence_chunks.length > 0) {
+                data.evidence_chunks.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'citation-item';
+                    const scorePct = (c.relevance_score * 100).toFixed(0) + '%';
+                    div.innerHTML = `
+                        <div class="citation-text">"... ${c.text} ..."</div>
+                        <div class="citation-meta">
+                            <span>Source: ${c.source}</span>
+                            <span>Relevance: ${scorePct}</span>
+                        </div>
+                    `;
+                    citationsContainer.appendChild(div);
+                });
+            } else {
+                citationsContainer.innerHTML = '<div style="font-style: italic; color: var(--text-secondary)">No direct citation extracts retrieved. Standard payer rule validation was applied.</div>';
+            }
+        }
+
+
+
+        async function submitReview(decision) {
+            if (!currentRequestId) return;
+            
+            const reason = prompt(`Enter human reviewer reason for forcing [${decision.toUpperCase()}]:`);
+            if (reason === null) return; // cancelled
+
+            try {
+                const response = await fetch('/api/prior-authorization/review', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        request_id: currentRequestId,
+                        reviewer_decision: decision,
+                        review_reason: reason
+                    })
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`Review Override Submitted!\nStatus: ${result.message}`);
+                    
+                    // Update the banner with human decision override
+                    const banner = document.getElementById('decision-banner');
+                    const decVal = document.getElementById('decision-val');
+                    const decLbl = document.getElementById('decision-lbl');
+                    
+                    decVal.innerText = decision.toUpperCase();
+                    decLbl.innerText = "FINAL HUMAN DECISION (REVIEW COMPLETED)";
+                    
+                    banner.className = 'decision-banner';
+                    if (decision === 'Approved') banner.classList.add('approve');
+                    else if (decision === 'Denied') banner.classList.add('deny');
+                    else banner.classList.add('pend');
+                    
+                    document.getElementById('res-reason').innerText = `Human Overrode Decision: "${reason}" (Review Completed).`;
+                } else {
+                    alert('Review Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Connection Error: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

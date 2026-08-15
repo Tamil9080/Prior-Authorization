@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(r"d:\cts hackthon\new1\organized_scene")
+ROOT = Path(__file__).resolve().parent.parent
 TRAIN_SCRIPT = ROOT / "scripts" / "preprocess_and_train.py"
 PREDICT_SCRIPT = ROOT / "scripts" / "predict_decision.py"
 

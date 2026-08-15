@@ -1,0 +1,415 @@
+{
+  "decision": {
+    "accuracy": 0.6138888888888889,
+    "confusion_matrix": [
+      [
+        536,
+        62,
+        18,
+        48
+      ],
+      [
+        104,
+        507,
+        7,
+        51
+      ],
+      [
+        78,
+        29,
+        5,
+        14
+      ],
+      [
+        168,
+        101,
+        15,
+        57
+      ]
+    ],
+    "classification_report": {
+      "Approved": {
+        "precision": 0.6049661399548533,
+        "recall": 0.8072289156626506,
+        "f1-score": 0.6916129032258065,
+        "support": 664.0
+      },
+      "Denied": {
+        "precision": 0.7253218884120172,
+        "recall": 0.757847533632287,
+        "f1-score": 0.7412280701754386,
+        "support": 669.0
+      },
+      "In Review": {
+        "precision": 0.1111111111111111,
+        "recall": 0.03968253968253968,
+        "f1-score": 0.05847953216374269,
+        "support": 126.0
+      },
+      "Pending Additional Information": {
+        "precision": 0.3352941176470588,
+        "recall": 0.16715542521994134,
+        "f1-score": 0.22309197651663404,
+        "support": 341.0
+      },
+      "accuracy": 0.6138888888888889,
+      "macro avg": {
+        "precision": 0.4441733142812601,
+        "recall": 0.4429786035493547,
+        "f1-score": 0.4286031205204054,
+        "support": 1800.0
+      },
+      "weighted avg": {
+        "precision": 0.5640406413307274,
+        "recall": 0.6138888888888889,
+        "f1-score": 0.5769751842967265,
+        "support": 1800.0
+      }
+    }
+  },
+  "meets_criteria": {
+    "accuracy": 0.6233333333333333,
+    "classification_report": {
+      "Insufficient Information": {
+        "precision": 0.3352941176470588,
+        "recall": 0.16715542521994134,
+        "f1-score": 0.22309197651663404,
+        "support": 341.0
+      },
+      "No": {
+        "precision": 0.7113594040968343,
+        "recall": 0.8286334056399133,
+        "f1-score": 0.7655310621242485,
+        "support": 461.0
+      },
+      "Partial": {
+        "precision": 0.5935483870967742,
+        "recall": 0.5954692556634305,
+        "f1-score": 0.5945072697899838,
+        "support": 309.0
+      },
+      "Under Review": {
+        "precision": 0.1111111111111111,
+        "recall": 0.03968253968253968,
+        "f1-score": 0.05847953216374269,
+        "support": 126.0
+      },
+      "Yes": {
+        "precision": 0.6693766937669376,
+        "recall": 0.8774422735346359,
+        "f1-score": 0.7594158339738662,
+        "support": 563.0
+      },
+      "accuracy": 0.6233333333333333,
+      "macro avg": {
+        "precision": 0.4841379427437432,
+        "recall": 0.5016765799480922,
+        "f1-score": 0.480205134913695,
+        "support": 1800.0
+      },
+      "weighted avg": {
+        "precision": 0.5647430608944315,
+        "recall": 0.6233333333333333,
+        "f1-score": 0.58200359198693,
+        "support": 1800.0
+      }
+    }
+  },
+  "decision_reason": {
+    "accuracy": 0.5905555555555555,
+    "classification_report": {
+      "Approved on the basis of clinical urgency despite partial criteria documentation.": {
+        "precision": 0.45161290322580644,
+        "recall": 0.6363636363636364,
+        "f1-score": 0.5283018867924528,
+        "support": 22.0
+      },
+      "Approved with conditions: partial criteria met, service authorized with monitoring requirement.": {
+        "precision": 0.18803418803418803,
+        "recall": 0.27848101265822783,
+        "f1-score": 0.22448979591836735,
+        "support": 79.0
+      },
+      "Approved: AHI meets threshold for CPAP therapy.": {
+        "precision": 0.9090909090909091,
+        "recall": 0.9090909090909091,
+        "f1-score": 0.9090909090909091,
+        "support": 33.0
+      },
+      "Approved: Alternative medication trial with inadequate response documented.": {
+        "precision": 0.8793103448275862,
+        "recall": 1.0,
+        "f1-score": 0.9357798165137615,
+        "support": 51.0
+      },
+      "Approved: At least two preventive medication classes failed at adequate duration.": {
+        "precision": 0.8666666666666667,
+        "recall": 1.0,
+        "f1-score": 0.9285714285714286,
+        "support": 26.0
+      },
+      "Approved: Conventional therapy failure and objective inflammation evidence both documented.": {
+        "precision": 0.8958333333333334,
+        "recall": 1.0,
+        "f1-score": 0.945054945054945,
+        "support": 43.0
+      },
+      "Approved: DMARD trial duration and supportive labs/imaging both met.": {
+        "precision": 0.2926829268292683,
+        "recall": 0.48,
+        "f1-score": 0.36363636363636365,
+        "support": 25.0
+      },
+      "Approved: Imaging grade, conservative treatment duration, and functional limitation all documented.": {
+        "precision": 0.1111111111111111,
+        "recall": 0.1,
+        "f1-score": 0.10526315789473684,
+        "support": 10.0
+      },
+      "Approved: Insulin/pump therapy or hypoglycemia history, plus glycemic control issue.": {
+        "precision": 0.8648648648648649,
+        "recall": 1.0,
+        "f1-score": 0.927536231884058,
+        "support": 64.0
+      },
+      "Approved: Medication trial history and psychotherapy engagement both documented.": {
+        "precision": 0.8947368421052632,
+        "recall": 1.0,
+        "f1-score": 0.9444444444444444,
+        "support": 17.0
+      },
+      "Approved: Positive stress test, unstable presentation, or emergent MI suspicion present.": {
+        "precision": 0.9090909090909091,
+        "recall": 1.0,
+        "f1-score": 0.9523809523809523,
+        "support": 60.0
+      },
+      "Approved: Symptom duration and conservative treatment / red-flag criteria met.": {
+        "precision": 0.6557377049180327,
+        "recall": 0.8695652173913043,
+        "f1-score": 0.7476635514018691,
+        "support": 46.0
+      },
+      "Awaiting peer-to-peer review call with requesting provider.": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 18.0
+      },
+      "Cannot render decision: clinical notes incomplete. Resubmit with complete documentation.": {
+        "precision": 0.050505050505050504,
+        "recall": 0.12195121951219512,
+        "f1-score": 0.07142857142857142,
+        "support": 41.0
+      },
+      "Cannot render decision: documentation of failed conservative therapy missing. Resubmit with complete documentation.": {
+        "precision": 1.0,
+        "recall": 0.09523809523809523,
+        "f1-score": 0.17391304347826086,
+        "support": 42.0
+      },
+      "Cannot render decision: functional assessment (e.g., oxford knee score) not documented. Resubmit with complete documentation.": {
+        "precision": 0.5714285714285714,
+        "recall": 0.8,
+        "f1-score": 0.6666666666666666,
+        "support": 5.0
+      },
+      "Cannot render decision: imaging report not attached. Resubmit with complete documentation.": {
+        "precision": 1.0,
+        "recall": 0.13953488372093023,
+        "f1-score": 0.24489795918367346,
+        "support": 43.0
+      },
+      "Cannot render decision: recent lab results not provided. Resubmit with complete documentation.": {
+        "precision": 1.0,
+        "recall": 0.14705882352941177,
+        "f1-score": 0.2564102564102564,
+        "support": 34.0
+      },
+      "Cannot render decision: required clinical documentation incomplete. Resubmit with complete documentation.": {
+        "precision": 1.0,
+        "recall": 0.07207207207207207,
+        "f1-score": 0.13445378151260504,
+        "support": 111.0
+      },
+      "Cannot render decision: sleep study report not on file. Resubmit with complete documentation.": {
+        "precision": 0.5428571428571428,
+        "recall": 0.8260869565217391,
+        "f1-score": 0.6551724137931034,
+        "support": 23.0
+      },
+      "Cannot render decision: specialist consultation notes missing. Resubmit with complete documentation.": {
+        "precision": 1.0,
+        "recall": 0.14285714285714285,
+        "f1-score": 0.25,
+        "support": 42.0
+      },
+      "Clinical criteria met: documented conservative treatment history and supporting findings justify the requested service.": {
+        "precision": 0.5016722408026756,
+        "recall": 0.7978723404255319,
+        "f1-score": 0.6160164271047228,
+        "support": 188.0
+      },
+      "Complex treatment history requires secondary review; escalated to medical director queue.": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 22.0
+      },
+      "Denied: AHI below qualifying threshold for the documented symptom profile.": {
+        "precision": 0.6363636363636364,
+        "recall": 0.5675675675675675,
+        "f1-score": 0.6,
+        "support": 37.0
+      },
+      "Denied: Conventional DMARD trial under 3 months (or not documented).": {
+        "precision": 0.631578947368421,
+        "recall": 0.48,
+        "f1-score": 0.5454545454545454,
+        "support": 50.0
+      },
+      "Denied: Fewer than two antidepressant trials at adequate duration.": {
+        "precision": 0.9565217391304348,
+        "recall": 1.0,
+        "f1-score": 0.9777777777777777,
+        "support": 66.0
+      },
+      "Denied: Fewer than two preventive medication classes trialed for >=8 weeks each.": {
+        "precision": 0.8695652173913043,
+        "recall": 1.0,
+        "f1-score": 0.9302325581395349,
+        "support": 60.0
+      },
+      "Denied: Kellgren-Lawrence grade below 3 without significant functional limitation.": {
+        "precision": 0.9512195121951219,
+        "recall": 0.8478260869565217,
+        "f1-score": 0.896551724137931,
+        "support": 46.0
+      },
+      "Denied: No alternative stimulant/non-stimulant medication trial documented.": {
+        "precision": 0.9444444444444444,
+        "recall": 1.0,
+        "f1-score": 0.9714285714285714,
+        "support": 34.0
+      },
+      "Denied: No conservative treatment attempted or documented.": {
+        "precision": 0.7241379310344828,
+        "recall": 1.0,
+        "f1-score": 0.84,
+        "support": 21.0
+      },
+      "Denied: No conventional therapy trial documented.": {
+        "precision": 0.896551724137931,
+        "recall": 1.0,
+        "f1-score": 0.9454545454545454,
+        "support": 26.0
+      },
+      "Denied: No qualifying stress test result or acute/unstable presentation documented.": {
+        "precision": 0.9411764705882353,
+        "recall": 1.0,
+        "f1-score": 0.9696969696969697,
+        "support": 32.0
+      },
+      "Denied: Not on insulin/pump therapy and no hypoglycemia history documented.": {
+        "precision": 0.8260869565217391,
+        "recall": 0.8636363636363636,
+        "f1-score": 0.8444444444444444,
+        "support": 22.0
+      },
+      "Denied: Symptom duration under 6 weeks with no red-flag findings.": {
+        "precision": 0.8235294117647058,
+        "recall": 0.6086956521739131,
+        "f1-score": 0.7,
+        "support": 23.0
+      },
+      "Denied: clinical criteria not met. Conservative/first-line treatment not attempted or documented.": {
+        "precision": 0.2184873949579832,
+        "recall": 0.5909090909090909,
+        "f1-score": 0.31901840490797545,
+        "support": 44.0
+      },
+      "Denied: criteria only partially met. Conventional therapy trial documented, but no objective inflammation evidence.": {
+        "precision": 0.8125,
+        "recall": 1.0,
+        "f1-score": 0.896551724137931,
+        "support": 26.0
+      },
+      "Denied: criteria only partially met. DMARD trial met, but no supportive labs or imaging on file.": {
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1-score": 0.8888888888888888,
+        "support": 12.0
+      },
+      "Denied: criteria only partially met. Imaging supports need, but conservative management under 12 weeks.": {
+        "precision": 0.59375,
+        "recall": 1.0,
+        "f1-score": 0.7450980392156863,
+        "support": 19.0
+      },
+      "Denied: criteria only partially met. Medication trial criteria met, but no psychotherapy engagement documented.": {
+        "precision": 0.8181818181818182,
+        "recall": 1.0,
+        "f1-score": 0.9,
+        "support": 9.0
+      },
+      "Denied: criteria only partially met. On qualifying therapy, but HbA1c at goal without other concerns.": {
+        "precision": 0.7272727272727273,
+        "recall": 0.7272727272727273,
+        "f1-score": 0.7272727272727273,
+        "support": 11.0
+      },
+      "Denied: criteria only partially met; step therapy or additional documentation required before approval.": {
+        "precision": 0.29508196721311475,
+        "recall": 0.13740458015267176,
+        "f1-score": 0.1875,
+        "support": 131.0
+      },
+      "Extensive treatment history requires clinical reviewer verification.": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 10.0
+      },
+      "High-cost service flagged for additional utilization review before determination.": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 18.0
+      },
+      "Request received with complete documentation; assigned to clinical reviewer, decision pending.": {
+        "precision": 0.05263157894736842,
+        "recall": 0.043478260869565216,
+        "f1-score": 0.047619047619047616,
+        "support": 23.0
+      },
+      "Submitted within standard review window; no action taken yet.": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 29.0
+      },
+      "Urgent request queued for expedited review within 24-72 hours.": {
+        "precision": 0.038461538461538464,
+        "recall": 0.16666666666666666,
+        "f1-score": 0.0625,
+        "support": 6.0
+      },
+      "accuracy": 0.5905555555555555,
+      "macro avg": {
+        "precision": 0.6117995375144867,
+        "recall": 0.5967310718605715,
+        "f1-score": 0.5560144037334506,
+        "support": 1800.0
+      },
+      "weighted avg": {
+        "precision": 0.6484682648562172,
+        "recall": 0.5905555555555555,
+        "f1-score": 0.5524453580378867,
+        "support": 1800.0
+      }
+    }
+  },
+  "rows": 9000,
+  "train_rows": 7200,
+  "test_rows": 1800
+}
