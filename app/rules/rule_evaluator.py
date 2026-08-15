@@ -335,6 +335,70 @@ def evaluate_rules(request_data, policy):
                     "evidence": "Psychiatrist consultation note within 30 days documented."
                 })
 
+    elif "45378" in pol_id:  # Preventive Screening Colonoscopy
+        # 1. USPSTF Age Recommendation (45-75 years)
+        age = request_data.get("age", 0)
+        try:
+            age = int(age)
+        except ValueError:
+            age = 0
+            
+        if 45 <= age <= 75:
+            rules_results.append({
+                "rule": "USPSTF Age Recommendation (45-75 years)",
+                "status": "MET",
+                "evidence": f"Patient age is {age} years, which falls within the recommended 45-75 years screening range."
+            })
+        else:
+            rules_results.append({
+                "rule": "USPSTF Age Recommendation (45-75 years)",
+                "status": "NOT_MET",
+                "evidence": f"Patient age is {age} years, which is outside the recommended 45-75 years screening range."
+            })
+
+        # 2. Network Provider Status
+        combined_text = (history + " " + prev_treat + " " + lab).lower()
+        
+        if "out-of-network" in combined_text or "non-participating" in combined_text or "non-network" in combined_text or "oon" in combined_text:
+            rules_results.append({
+                "rule": "Network Provider Status",
+                "status": "NOT_MET",
+                "evidence": "Services are provided by an out-of-network provider. Preventive care cost-sharing waiver only applies to Network providers."
+            })
+        elif "in-network" in combined_text or "network provider" in combined_text or "participating provider" in combined_text or "participating in the network" in combined_text or "in network" in combined_text:
+            rules_results.append({
+                "rule": "Network Provider Status",
+                "status": "MET",
+                "evidence": "Services are documented as provided by a participating Network provider."
+            })
+        else:
+            rules_results.append({
+                "rule": "Network Provider Status",
+                "status": "INSUFFICIENT",
+                "evidence": "Provider network participation status is not clearly documented in the request."
+            })
+
+        # 3. Preventive Screening Intent (vs. Diagnostic/Surveillance/Therapeutic)
+        has_symptoms = "symptomatic" in combined_text and "asymptomatic" not in combined_text
+        is_diagnostic = has_symptoms or any(kw in combined_text for kw in [
+            "diagnostic", "surveillance", "polyp history", "prior polyp", 
+            "history of polyps", "polyp removal", "bleeding", "blood in stool", 
+            "rectal bleeding", "therapeutic", "abdominal pain"
+        ])
+        
+        if is_diagnostic:
+            rules_results.append({
+                "rule": "Preventive Screening Intent",
+                "status": "NOT_MET",
+                "evidence": "Procedure is documented for diagnostic or surveillance purposes (e.g., history of polyps or active gastrointestinal symptoms), which does not qualify for preventive screening benefit."
+            })
+        else:
+            rules_results.append({
+                "rule": "Preventive Screening Intent",
+                "status": "MET",
+                "evidence": "Procedure is performed for routine preventive screening with no documented history of polyps, cancer, or active symptoms."
+            })
+
     # Default rules for other policies
     else:
         # Check standard conservative treatment trial

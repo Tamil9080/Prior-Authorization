@@ -195,6 +195,24 @@ base_policies = [
         "source_url": "https://www.cms.gov/medicare-coverage-database/view/lcd.aspx?LCDId=36420",
         "frequency_limit": "1 procedure per 30 days",
         "quantity_limit": "1 unit"
+    },
+    {
+        "policy_id_suffix": "45378",
+        "policy_title": "Preventive Care Services: Colorectal Cancer Screening (Colonoscopy)",
+        "service_code": "45378",
+        "service_description": "Preventive Screening Colonoscopy",
+        "diagnosis_code": "Z12.11",
+        "coverage_status": "Covered",
+        "prior_authorization_required": "Yes",
+        "medical_necessity_rule": "Waived cost-sharing for preventive screening colonoscopy when: 1. Patient's age is 45 to 75 years; AND 2. Provider is participating in the network (Network Provider); AND 3. Billed with preventive diagnosis codes (Z12.11, Z12.10, or Z00.00). Diagnostic or surveillance colonoscopy (e.g. follow-up after prior polyp removal) is subject to member cost-sharing.",
+        "documentation_required": "Provider network status documentation, patient age confirmation, and medical notes indicating screening intent without prior history of polyps or colorectal cancer.",
+        "limitations": "Age limits 45 to 75 years. Diagnostic, surveillance, or therapeutic colonoscopies are not covered under the preventive care services benefit (cost-sharing applies).",
+        "exclusions": "Non-network providers are excluded from the preventive care services benefit. Colonoscopy for patients under 45 or over 75 is excluded from preventive coverage.",
+        "effective_date": "2026-07-01",
+        "source": "UnitedHealthcare Commercial and Individual Exchange Medical Policy",
+        "source_url": "https://www.uhcprovider.com/content/dam/provider/docs/public/policies/comm-medical-drug/preventive-care-services.pdf",
+        "frequency_limit": "1 procedure per 10 years",
+        "quantity_limit": "1 unit"
     }
 ]
 

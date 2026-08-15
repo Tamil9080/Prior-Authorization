@@ -605,6 +605,7 @@
                         <button class="preset-btn" onclick="loadClinicalPreset('KNEE')">Knee Osteoarthritis (TKA)</button>
                         <button class="preset-btn" onclick="loadClinicalPreset('MDD')">Depression (rTMS)</button>
                         <button class="preset-btn" onclick="loadClinicalPreset('MIGRAINE')">Chronic Migraine (CGRP)</button>
+                        <button class="preset-btn" onclick="loadClinicalPreset('COLONOSCOPY')">Screening Colonoscopy</button>
                     </div>
 
                     <form id="clinical-form" onsubmit="submitClinical(event)">
@@ -916,6 +917,23 @@
                 treatment_duration: 16,
                 medications: "Sumatriptan 100mg PRN for acute attacks",
                 lab_results: "Neurology exam: chronic migraines documented, MRI brain normal. Patient keeps detailed headache diary."
+            },
+            COLONOSCOPY: {
+                patient_id: "PAT702811",
+                patient_name: "Deborah Logan",
+                insurer_or_payer: "UnitedHealthcare",
+                age: 52,
+                diagnosis_code: "Z12.11",
+                service_code: "45378",
+                provider_specialty: "Gastroenterology",
+                urgency: "Routine",
+                diagnosis: "Encounter for screening for malignant neoplasm of colon",
+                service_description: "Preventive Screening Colonoscopy",
+                clinical_history: "52-year-old patient requested routine preventive colorectal cancer screening. Patient is asymptomatic with no family history of colon cancer.",
+                previous_treatment: "None required (routine screening)",
+                treatment_duration: 0,
+                medications: "None reported",
+                lab_results: "Prior stool test (FIT) negative 2 years ago. Patient is due for a screening colonoscopy. Provider is in-network."
             }
         };
 

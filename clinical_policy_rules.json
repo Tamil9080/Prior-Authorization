@@ -69,6 +69,13 @@
       "specialty": "Gastroenterology",
       "diagnosis_codes": ["K50.90", "K50.10"],
       "procedure_codes": ["J1745"]
+    },
+    {
+      "policy_number": "MHI-GI-025",
+      "name": "Preventive Care Services - Screening Colonoscopy",
+      "specialty": "Gastroenterology",
+      "diagnosis_codes": ["Z12.11", "Z00.00", "Z12.10"],
+      "procedure_codes": ["45378", "G0105", "G0121"]
     }
   ]
 }
