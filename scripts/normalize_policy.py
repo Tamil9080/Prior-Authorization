@@ -21,7 +21,7 @@ def main():
         # Standardize structure and mapping to target columns
         record = {
             "policy_id": item.get("policy_id"),
-            "insurer_or_payer": "Medicare (CMS)",
+            "insurer_or_payer": item.get("source", "Medicare (CMS)"),
             "policy_type": item.get("policy_type"),
             "policy_title": item.get("policy_title"),
             "service_code": item.get("service_code"),

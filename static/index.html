@@ -224,6 +224,8 @@
             min-height: 80px;
         }
 
+
+
         .btn-submit {
             grid-column: span 2;
             background-color: var(--primary);
@@ -616,6 +618,17 @@
                                 <input type="text" id="patient_name" name="patient_name" value="Eleanor Vance">
                             </div>
                             <div class="form-group">
+                                <label for="insurer_or_payer">Insurer / Payer</label>
+                                <select id="insurer_or_payer" name="insurer_or_payer">
+                                    <option value="Medicare (CMS)">Medicare (CMS)</option>
+                                    <option value="UnitedHealthcare">UnitedHealthcare</option>
+                                    <option value="Aetna">Aetna</option>
+                                    <option value="Cigna">Cigna</option>
+                                    <option value="Humana">Humana</option>
+                                    <option value="Blue Cross Blue Shield">Blue Cross Blue Shield</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="age">Age</label>
                                 <input type="number" id="age" name="age" required value="54">
                             </div>
@@ -839,6 +852,7 @@
             OSA: {
                 patient_id: "PAT402837",
                 patient_name: "Eleanor Vance",
+                insurer_or_payer: "Medicare (CMS)",
                 age: 54,
                 diagnosis_code: "G47.33",
                 service_code: "E0601",
@@ -855,6 +869,7 @@
             KNEE: {
                 patient_id: "PAT938210",
                 patient_name: "Robert Shaw",
+                insurer_or_payer: "Medicare (CMS)",
                 age: 72,
                 diagnosis_code: "M17.11",
                 service_code: "27447",
@@ -871,6 +886,7 @@
             MDD: {
                 patient_id: "PAT302912",
                 patient_name: "Miriam Hopkins",
+                insurer_or_payer: "Medicare (CMS)",
                 age: 41,
                 diagnosis_code: "F33.1",
                 service_code: "90867",
@@ -887,6 +903,7 @@
             MIGRAINE: {
                 patient_id: "PAT102948",
                 patient_name: "Liam Neeson",
+                insurer_or_payer: "Medicare (CMS)",
                 age: 39,
                 diagnosis_code: "G43.709",
                 service_code: "J3032",
