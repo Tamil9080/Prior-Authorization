@@ -109,10 +109,13 @@ def match_policy(
         if pol_title and pol_title in row_title:
             score += 4
             
-        # 6. Payer filter
+        # 6. Payer filter (highest priority weight to guarantee selected insurer is matched)
         row_payer = str(row.get("insurer_or_payer", "")).strip().lower()
-        if payer and payer in row_payer:
-            score += 1
+        if payer:
+            clean_payer = payer.replace("(cms)", "").strip()
+            clean_row_payer = row_payer.replace("(cms)", "").strip()
+            if clean_payer in clean_row_payer or clean_row_payer in clean_payer:
+                score += 30
             
         # Update best match
         if score > best_score:

@@ -56,7 +56,7 @@ def evaluate_rules(request_data, policy):
     history = str(request_data.get("clinical_history", "")).strip().lower()
     lab = str(request_data.get("lab_results", "")).strip().lower()
     
-    if pol_id == "L33718":  # CPAP
+    if "33718" in pol_id:  # CPAP
         # Requires AHI study report (supports AHI: 32, AHI of 32, AHI is 32, etc.)
         ahi_match = re.search(r"ahi\b.*?(\d+)", lab + " " + history)
         if not ahi_match:
@@ -96,7 +96,23 @@ def evaluate_rules(request_data, policy):
                     "evidence": f"Sleep study AHI of {ahi} events/hour is below the diagnostic threshold (>= 5 required)."
                 })
 
-    elif pol_id == "L38429":  # Lumbar Spine MRI
+        # Humana checklist check
+        if "HUM" in pol_id:
+            has_checklist = "checklist" in history or "checklist" in prev_treat or "checklist" in lab
+            if not has_checklist:
+                rules_results.append({
+                    "rule": "Humana PA Checklist Documentation",
+                    "status": "INSUFFICIENT",
+                    "evidence": "Humana requires the ordering provider to complete the Pre-Service Prior Authorization Checklist (PA Checklist)."
+                })
+            else:
+                rules_results.append({
+                    "rule": "Humana PA Checklist Documentation",
+                    "status": "MET",
+                    "evidence": "Completed Humana Pre-Service Prior Authorization Checklist documented."
+                })
+
+    elif "38429" in pol_id:  # Lumbar Spine MRI
         # Requires duration >= 6 weeks and conservative treatment (PT, NSAIDs)
         duration_6_weeks = "6 week" in history or "8 week" in history or "12 week" in history or "years" in history or "several" in history
         has_pt = "physical therapy" in prev_treat or "pt" in prev_treat
@@ -134,7 +150,39 @@ def evaluate_rules(request_data, policy):
                 "evidence": f"Documentation of conservative therapy failed trial is incomplete (reported: {prev_treat})."
             })
 
-    elif pol_id == "L37436":  # Total Knee Arthroplasty
+        # Cigna VAS Score check
+        if "CIG" in pol_id:
+            vas_match = re.search(r"vas\s*(\d+)|pain\s*score\s*(\d+)|pain\s*rating\s*(\d+)", history + " " + lab)
+            if not vas_match:
+                rules_results.append({
+                    "rule": "Visual Analog Scale (VAS) Pain Score",
+                    "status": "INSUFFICIENT",
+                    "evidence": "Cigna requires documentation of a pain intensity score (VAS) in clinical notes."
+                })
+            else:
+                score_str = vas_match.group(1) or vas_match.group(2) or vas_match.group(3)
+                try:
+                    score = int(score_str)
+                    if score >= 6:
+                        rules_results.append({
+                            "rule": "Visual Analog Scale (VAS) Pain Score",
+                            "status": "MET",
+                            "evidence": f"Clinical notes document qualifying VAS pain score of {score}/10 (>= 6 required)."
+                        })
+                    else:
+                        rules_results.append({
+                            "rule": "Visual Analog Scale (VAS) Pain Score",
+                            "status": "NOT_MET",
+                            "evidence": f"Documented VAS pain score of {score}/10 is below the Cigna coverage threshold (>= 6 required)."
+                        })
+                except ValueError:
+                    rules_results.append({
+                        "rule": "Visual Analog Scale (VAS) Pain Score",
+                        "status": "INSUFFICIENT",
+                        "evidence": "Pain score in clinical notes is not formatted as a valid integer."
+                    })
+
+    elif "37436" in pol_id:  # Total Knee Arthroplasty
         # Requires KL Grade 3 or 4, and conservative management >= 12 weeks
         kl_match = re.search(r"grade\s*(\d)", lab)
         has_conservative = "weight loss" in prev_treat or "corticosteroid" in prev_treat or "injection" in prev_treat or "therapy" in prev_treat or "nsaid" in prev_treat
@@ -183,7 +231,39 @@ def evaluate_rules(request_data, policy):
                     "evidence": "Conservative management trial duration is under 12 weeks or not clearly specified."
                 })
 
-    elif pol_id == "L34520":  # TMS
+        # UHC Supervised PT check
+        if "UHC" in pol_id:
+            has_supervised = "supervised physical therapy" in prev_treat or "supervised pt" in prev_treat
+            if not has_supervised:
+                rules_results.append({
+                    "rule": "Supervised Physical Therapy",
+                    "status": "NOT_MET",
+                    "evidence": "UnitedHealthcare requires a minimum of 12 weeks of formal, supervised physical therapy (supervised PT) directed by a licensed therapist."
+                })
+            else:
+                rules_results.append({
+                    "rule": "Supervised Physical Therapy",
+                    "status": "MET",
+                    "evidence": "Formal supervised physical therapy trial completed for at least 12 weeks."
+                })
+
+        # BCBS Validated Functional Scale check
+        if "BCB" in pol_id:
+            has_scale = "womac" in lab + " " + history or "oks" in lab + " " + history or "oxford" in lab + " " + history or "koos" in lab + " " + history
+            if not has_scale:
+                rules_results.append({
+                    "rule": "Validated Functional Scale Documentation",
+                    "status": "INSUFFICIENT",
+                    "evidence": "Blue Cross Blue Shield requires documented functional impairment score using a validated clinical assessment scale (WOMAC, OKS, or KOOS)."
+                })
+            else:
+                rules_results.append({
+                    "rule": "Validated Functional Scale Documentation",
+                    "status": "MET",
+                    "evidence": "Documented functional impairment score from a validated clinical assessment scale on file."
+                })
+
+    elif "34520" in pol_id:  # TMS
         # Requires psychiatrist visit AND >= 2 antidepressant failed trials AND psychotherapy
         has_psych = "psychiatrist" in history or "psychiatry" in history or "provider_specialty" in request_data and request_data["provider_specialty"].lower() == "psychiatry"
         
@@ -238,6 +318,22 @@ def evaluate_rules(request_data, policy):
                 "status": "NOT_MET",
                 "evidence": "No concurrent or prior engagement in formal psychotherapy documented."
             })
+
+        # Aetna Specialist consultation note check
+        if "AET" in pol_id:
+            has_recent_eval = "psychiatrist consultation" in history or "psychiatrist evaluation" in history or "consultation note" in history
+            if not has_recent_eval:
+                rules_results.append({
+                    "rule": "Aetna Specialist Consultation",
+                    "status": "INSUFFICIENT",
+                    "evidence": "Aetna requires a detailed specialist consultation note from a psychiatrist documented within 30 days prior to the request."
+                })
+            else:
+                rules_results.append({
+                    "rule": "Aetna Specialist Consultation",
+                    "status": "MET",
+                    "evidence": "Psychiatrist consultation note within 30 days documented."
+                })
 
     # Default rules for other policies
     else:

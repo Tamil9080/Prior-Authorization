@@ -1,0 +1,11 @@
+Aetna Clinical Policy Bulletin (CPB) 0702: Transcranial Magnetic Stimulation (TMS).
+
+Aetna considers repetitive transcranial magnetic stimulation (rTMS) medically necessary for major depressive disorder (MDD) when all the following criteria are met:
+1. Confirmed diagnosis of severe major depressive disorder (recurrent or single episode).
+2. Evaluation and request submitted by a board-certified psychiatrist. A detailed specialist consultation note from psychiatry must be documented within 30 days prior to the authorization request.
+3. Failure of, or intolerance to, at least two antidepressant medications from different pharmacological classes trialed for at least 6 weeks at therapeutic doses.
+4. Active or prior engagement in formal psychotherapy.
+
+Aetna Policy Bulletin: MRI Lumbar Spine.
+
+Aetna covers non-contrast lumbar spine MRI (CPT 72148) only after at least 6 consecutive weeks of conservative therapy (NSAIDs and physical therapy) have failed, unless red-flag symptoms are documented (e.g. cauda equina syndrome, severe focal neuro deficit, or high-velocity trauma).

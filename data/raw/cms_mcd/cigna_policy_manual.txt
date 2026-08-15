@@ -1,0 +1,7 @@
+Cigna Medical Coverage Policy: Lumbar Spine Imaging.
+
+Cigna considers magnetic resonance imaging (MRI) of the lumbar spine (CPT 72148) medically necessary when:
+1. Low back pain or radicular pain has persisted for a minimum of 6 consecutive weeks.
+2. A pain intensity rating score using a validated scale (e.g., Visual Analog Scale - VAS) of 6 or higher is documented in the clinical history notes.
+3. Failure of at least one conservative therapy trial (physical therapy or NSAIDs).
+4. Exclusion: Routine imaging for uncomplicated low back pain (VAS < 6) is not covered.

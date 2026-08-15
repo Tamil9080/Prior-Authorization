@@ -107,18 +107,20 @@ def check_prior_authorization():
                 probs = {str(c).upper(): float(probabilities[i]) for i, c in enumerate(classes)}
                 ml_confidence = float(probs.get(ml_prediction, 0.5))
         
-        # 2. Retrieve CMS Coverage Policy
+        # 2. Retrieve CMS / Commercial Payer Coverage Policy
+        insurer_or_payer = str(data.get("insurer_or_payer", "Medicare (CMS)")).strip()
         policy = policy_service.match_policy(
             service_code=service_code,
             diagnosis_code=diag_code,
             service_description=service_desc,
-            diagnosis=diagnosis_text
+            diagnosis=diagnosis_text,
+            insurer_or_payer=insurer_or_payer
         )
         
         policy_found = policy is not None
         p_id = policy.get("policy_id", "N/A") if policy_found else "N/A"
         p_title = policy.get("policy_title", "N/A") if policy_found else "N/A"
-        p_source = "CMS MCD" if policy_found else "N/A"
+        p_source = policy.get("insurer_or_payer", "Medicare (CMS)") if policy_found else "N/A"
         
         # 3. Rule-by-rule evaluation
         rules_eval = rule_evaluator.evaluate_rules(features_dict, policy)

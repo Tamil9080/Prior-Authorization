@@ -22,28 +22,26 @@ class PolicyRAGEngine:
         try:
             raw_documents = []
             
-            # 1. Read clinical_policy_manual.pdf
-            pdf_policy = PDF_DIR / "clinical_policy_manual.pdf"
-            if pdf_policy.exists():
-                try:
-                    reader = pypdf.PdfReader(pdf_policy)
-                    full_text = ""
-                    for i, page in enumerate(reader.pages):
-                        text = page.extract_text() or ""
-                        raw_documents.append((text, f"Clinical Coverage Policy Manual (Page {i+1})"))
-                except Exception as e:
-                    print(f"Error reading policy PDF in RAG: {e}")
-                    
-            # 2. Read member_handbook.pdf
-            pdf_handbook = PDF_DIR / "member_handbook.pdf"
-            if pdf_handbook.exists():
-                try:
-                    reader = pypdf.PdfReader(pdf_handbook)
-                    for i, page in enumerate(reader.pages):
-                        text = page.extract_text() or ""
-                        raw_documents.append((text, f"Member Handbook (Page {i+1})"))
-                except Exception as e:
-                    print(f"Error reading handbook PDF in RAG: {e}")
+            # Read all PDF and TXT files in PDF_DIR
+            if PDF_DIR.exists():
+                for path in PDF_DIR.iterdir():
+                    if path.suffix.lower() == ".pdf":
+                        try:
+                            reader = pypdf.PdfReader(path)
+                            source_name = path.stem.replace("_", " ").title()
+                            for i, page in enumerate(reader.pages):
+                                text = page.extract_text() or ""
+                                raw_documents.append((text, f"{source_name} (Page {i+1})"))
+                        except Exception as e:
+                            print(f"Error reading PDF {path.name} in RAG: {e}")
+                    elif path.suffix.lower() == ".txt":
+                        try:
+                            with open(path, "r", encoding="utf-8") as f:
+                                text = f.read()
+                            source_name = path.stem.replace("_", " ").title()
+                            raw_documents.append((text, f"{source_name} Guide"))
+                        except Exception as e:
+                            print(f"Error reading TXT {path.name} in RAG: {e}")
             
             # Chunking documents
             self.chunks = []

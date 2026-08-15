@@ -1,0 +1,11 @@
+UnitedHealthcare Commercial Coverage Guideline: Total Knee Arthroplasty (TKA).
+
+Coverage Criteria:
+1. Radiographic evidence of moderate-to-severe osteoarthritis (Kellgren-Lawrence Grade 3 or 4).
+2. Failure of at least 12 weeks of conservative therapy. Crucially, the conservative management trial must consist of formal, supervised physical therapy (supervised PT) directed by a licensed therapist. Self-directed home exercise programs or general activity modification are not considered adequate trials under UHC terms.
+3. Significant functional joint limitation impacting activities of daily living (e.g. transfers, walking, stairs).
+4. Exclusion: Joint replacement for early-stage OA (KL Grade 1 or 2) is considered not medically necessary.
+
+UnitedHealthcare Sleep Therapy Guideline: Continuous Positive Airway Pressure (CPAP).
+
+UHC covers CPAP for obstructive sleep apnea when an approved sleep study (polysomnogram or home sleep test) confirms an Apnea-Hypopnea Index (AHI) of 15 or more events per hour, or AHI between 5 and 14 with documented sleep-related symptoms (daytime sleepiness, mood disorders, hypertension, or ischemic heart disease).

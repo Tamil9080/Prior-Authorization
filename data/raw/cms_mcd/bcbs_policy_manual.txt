@@ -1,0 +1,7 @@
+Blue Cross Blue Shield Association Medical Policy: Knee Reconstruction.
+
+BCBS covers Total Knee Arthroplasty (CPT 27447) when the following criteria are documented:
+1. Moderate-to-severe joint narrowing or osteoarthritis (KL Grade 3 or 4).
+2. Documented functional impairment score using a validated clinical assessment scale. Validated scales include the Oxford Knee Score (OKS), the Western Ontario and McMaster Universities Osteoarthritis Index (WOMAC), or the Knee Injury and Osteoarthritis Outcome Score (KOOS).
+3. Inadequate response to at least 12 weeks of non-surgical conservative treatment (injections, physical therapy, or weight loss program).
+4. Exclusion: Joint replacement without a documented functional impairment score (WOMAC, OKS, or KOOS) will be pended.

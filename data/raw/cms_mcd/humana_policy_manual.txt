@@ -1,0 +1,6 @@
+Humana National Coverage Policy: Positive Airway Pressure (PAP) Devices.
+
+Humana covers CPAP (HCPCS E0601) for sleep apnea when:
+1. The ordering practitioner has completed the Humana Pre-Service Prior Authorization Checklist (PA Checklist) confirming symptom evaluation.
+2. Sleep study (facility-based or home-based) documents an AHI >= 15 events/hour, or AHI of 5-14 with documented co-existing conditions (excessive daytime sleepiness, cognitive deficits, or cardiovascular disease).
+3. Exclusion: Devices ordered without a completed Humana PA Checklist will be pended for additional information.
