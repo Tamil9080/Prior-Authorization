@@ -24,9 +24,9 @@ EXPORT_MODEL_PATH = ROOT / "models" / "random_forest_model.joblib"
 CLINICAL_MODEL_PATH = ROOT / "models" / "clinical_rf_model.joblib"
 REVIEW_MODEL_PATH = ROOT / "models" / "review_rf_model.joblib"
 
-CLINICAL_DATA_PATH = ROOT / "raw" / "clinical_pa_test_data.csv"
-REVIEW_DATA_PATH = PROJECT_ROOT / "clinical_pa_training_data_with_review.csv"
-RULE_DATA_PATH = PROJECT_ROOT / "rule_based_training_data.csv"
+CLINICAL_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "pa" / "clinical_pa_test_data.csv"
+REVIEW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "pa" / "clinical_pa_training_data_with_review.csv"
+RULE_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "pa" / "rule_based_training_data.csv"
 
 # Global model placeholders
 export_model = None
@@ -53,7 +53,7 @@ def load_policy_resources():
             print(f"Error loading clinical_policy_rules.json: {e}")
             
     # 2. Parse clinical_policy_manual.pdf (fallback/caching)
-    pdf_policy_path = PROJECT_ROOT / "clinical_policy_manual.pdf"
+    pdf_policy_path = PROJECT_ROOT / "data" / "raw" / "cms_mcd" / "clinical_policy_manual.pdf"
     if pdf_policy_path.exists():
         try:
             reader = pypdf.PdfReader(pdf_policy_path)
@@ -66,7 +66,7 @@ def load_policy_resources():
             print(f"Error caching clinical policy manual PDF: {e}")
             
     # 3. Parse member_handbook.pdf
-    pdf_handbook_path = PROJECT_ROOT / "member_handbook.pdf"
+    pdf_handbook_path = PROJECT_ROOT / "data" / "raw" / "cms_mcd" / "member_handbook.pdf"
     if pdf_handbook_path.exists():
         try:
             reader = pypdf.PdfReader(pdf_handbook_path)

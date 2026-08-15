@@ -9,17 +9,17 @@ import numpy as np
 from sklearn.metrics import accuracy_score, classification_report
 
 script_dir = Path(__file__).resolve().parent
-ROOT = script_dir.parent  # organized_scene
-PROJECT_ROOT = ROOT.parent  # workspace root
+ROOT = script_dir.parent  # workspace root
+PROJECT_ROOT = ROOT
 
-EXPORT_MODEL_PATH = ROOT / "models" / "random_forest_model.joblib"
-CLINICAL_MODEL_PATH = ROOT / "models" / "clinical_rf_model.joblib"
-REVIEW_MODEL_PATH = ROOT / "models" / "review_rf_model.joblib"
+EXPORT_MODEL_PATH = ROOT / "models" / "random_forest" / "random_forest_model.joblib"
+CLINICAL_MODEL_PATH = ROOT / "models" / "random_forest" / "clinical_rf_model.joblib"
+REVIEW_MODEL_PATH = ROOT / "models" / "random_forest" / "review_rf_model.joblib"
 
-EXPORT_DATA_PATH = ROOT / "raw" / "export.csv"
-CLINICAL_DATA_PATH = ROOT / "raw" / "clinical_pa_test_data.csv"
-REVIEW_DATA_PATH = PROJECT_ROOT / "clinical_pa_training_data_with_review.csv"
-RULE_DATA_PATH = PROJECT_ROOT / "rule_based_training_data.csv"
+EXPORT_DATA_PATH = ROOT / "data" / "raw" / "pa" / "export.csv"
+CLINICAL_DATA_PATH = ROOT / "data" / "raw" / "pa" / "clinical_pa_test_data.csv"
+REVIEW_DATA_PATH = ROOT / "data" / "raw" / "pa" / "clinical_pa_training_data_with_review.csv"
+RULE_DATA_PATH = ROOT / "data" / "raw" / "pa" / "rule_based_training_data.csv"
 
 # Add script_dir to sys.path to import rule_engine and app correctly
 if str(script_dir) not in sys.path:
