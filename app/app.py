@@ -119,6 +119,26 @@ def submit_human_review():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/prior-authorization/parse-pdf", methods=["POST"])
+def parse_clinical_pdf():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part in the request."}), 400
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No selected file."}), 400
+        if file and file.filename.lower().endswith('.pdf'):
+            from utils.pdf_parser import extract_text_from_pdf, parse_clinical_details
+            text = extract_text_from_pdf(file)
+            if not text:
+                return jsonify({"error": "Could not extract text from PDF."}), 400
+            details = parse_clinical_details(text)
+            return jsonify(details)
+        else:
+            return jsonify({"error": "Only PDF files are supported."}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # Legacy endpoints mapping (to maintain backward compatibility with old codebases)
 @app.route("/api/predict_clinical", methods=["POST"])
 def predict_clinical_legacy():
@@ -131,6 +151,13 @@ def predict_review_legacy():
     # Reroute to /api/prior-authorization/check logic but return in legacy format
     from api.check import check_prior_authorization
     return check_prior_authorization()
+
+@app.after_request
+def add_header(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # Run initialization
 initialize_application()

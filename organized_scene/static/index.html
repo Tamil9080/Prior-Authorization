@@ -608,6 +608,32 @@
                         <button class="preset-btn" onclick="loadClinicalPreset('COLONOSCOPY')">Screening Colonoscopy</button>
                     </div>
 
+                    <!-- PDF Drag and Drop Zone -->
+                    <div class="upload-zone" id="pdf-upload-zone" style="border: 2px dashed var(--accent-light, #444); border-radius: 8px; padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; cursor: pointer; transition: all 0.3s ease; background: rgba(255, 255, 255, 0.02);">
+                        <div id="upload-content">
+                            <div style="font-size: 1.8rem; margin-bottom: 0.3rem; color: var(--accent-color, #4f46e5);">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary);">Drag & Drop Patient Clinical PDF</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">or click to select file from device</div>
+                        </div>
+                        <div id="upload-status" style="display: none; margin-top: 0.8rem; font-size: 0.8rem; color: var(--accent-color, #4f46e5); font-weight: 500;">
+                            <span class="inline-spinner" style="display: inline-block; width: 12px; height: 12px; border: 2px solid var(--accent-color, #4f46e5); border-radius: 50%; border-top-color: transparent; animation: html-spin 1s linear infinite; margin-right: 0.5rem; vertical-align: middle;"></span>
+                            Extracting patient details from clinical PDF...
+                        </div>
+                    </div>
+                    <input type="file" id="pdf-file-input" accept=".pdf" style="display: none;">
+                    <style>
+                    @keyframes html-spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    .upload-zone:hover {
+                        background: rgba(255, 255, 255, 0.05) !important;
+                        border-color: var(--accent-color, #4f46e5) !important;
+                    }
+                    </style>
+
                     <form id="clinical-form" onsubmit="submitClinical(event)">
                         <div class="form-grid">
                             <div class="form-group">
@@ -947,7 +973,92 @@
             }
         }
 
+        // PDF Uploader functionality
+        const uploadZone = document.getElementById('pdf-upload-zone');
+        const fileInput = document.getElementById('pdf-file-input');
+        const uploadStatus = document.getElementById('upload-status');
 
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        // Prevent default drag/drop behaviors globally to prevent browser redirection
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            window.addEventListener(eventName, (e) => e.preventDefault(), false);
+        });
+
+        ['dragenter', 'dragover'].forEach(type => {
+            uploadZone.addEventListener(type, (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = 'var(--accent-color, #4f46e5)';
+                uploadZone.style.background = 'rgba(255, 255, 255, 0.05)';
+            }, false);
+        });
+
+        ['dragleave', 'dragend'].forEach(type => {
+            uploadZone.addEventListener(type, (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = 'var(--accent-light, #444)';
+                uploadZone.style.background = 'rgba(255, 255, 255, 0.02)';
+            }, false);
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = 'var(--accent-light, #444)';
+            uploadZone.style.background = 'rgba(255, 255, 255, 0.02)';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
+                processPDF(file);
+            } else {
+                alert('Please upload a valid PDF file.');
+            }
+        }, false);
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                processPDF(file);
+            }
+        });
+
+        async function processPDF(file) {
+            uploadStatus.style.display = 'block';
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/prior-authorization/parse-pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    for (const [key, value] of Object.entries(data)) {
+                        const el = document.getElementById(key);
+                        if (el) {
+                            el.value = value;
+                        }
+                    }
+                    // Update uploader area to show loaded filename
+                    document.getElementById('upload-content').innerHTML = `
+                        <div style="font-size: 1.8rem; margin-bottom: 0.3rem; color: #10b981;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div style="font-size: 0.9rem; font-weight: 600; color: #10b981;">File Loaded Successfully</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">${file.name} (${(file.size / 1024).toFixed(1)} KB)</div>
+                        <div style="font-size: 0.75rem; color: var(--accent-color, #4f46e5); margin-top: 0.5rem; text-decoration: underline;">Click or drag to replace file</div>
+                    `;
+                } else {
+                    alert('Error parsing PDF: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection Error parsing PDF: ' + err.message);
+            } finally {
+                uploadStatus.style.display = 'none';
+            }
+        }
 
         function showLoading(show, type) {
             const spinner = document.getElementById(type + '-spinner');

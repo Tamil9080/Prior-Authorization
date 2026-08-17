@@ -1,6 +1,52 @@
 import re
 import pandas as pd
 
+def parse_duration_text(text: str) -> float | None:
+    """Regex-extracts a number + unit (day/week/month/year) and converts to weeks."""
+    if not text:
+        return None
+    match = re.search(r"(\d+(?:\.\d+)?)\s*(day|week|month|year)s?\b", text.lower())
+    if match:
+        val = float(match.group(1))
+        unit = match.group(2)
+        if "day" in unit:
+            return val / 7.0
+        elif "week" in unit:
+            return val
+        elif "month" in unit:
+            return val * 4.333
+        elif "year" in unit:
+            return val * 52.0
+            
+    # Handle descriptive terms if no number
+    if "several years" in text.lower() or "years" in text.lower():
+        return 104.0
+    if "several months" in text.lower():
+        return 16.0
+    if "several weeks" in text.lower() or "several" in text.lower():
+        return 6.0
+        
+    return None
+
+def extract_duration_in_weeks(request_data, text_field=None) -> float | None:
+    """Prefer structured duration fields, fall back to free text parsing."""
+    for field in ["treatment_duration_weeks", "symptom_duration_weeks", "duration_weeks", "treatment_duration"]:
+        val = request_data.get(field)
+        if val is not None:
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                parsed = parse_duration_text(str(val))
+                if parsed is not None:
+                    return parsed
+    
+    if text_field:
+        parsed = parse_duration_text(text_field)
+        if parsed is not None:
+            return parsed
+            
+    return None
+
 def evaluate_rules(request_data, policy):
     """
     Evaluate a prior authorization request against an applicable coverage policy.
@@ -114,21 +160,28 @@ def evaluate_rules(request_data, policy):
 
     elif "38429" in pol_id:  # Lumbar Spine MRI
         # Requires duration >= 6 weeks and conservative treatment (PT, NSAIDs)
-        duration_6_weeks = "6 week" in history or "8 week" in history or "12 week" in history or "years" in history or "several" in history
+        extracted_w = extract_duration_in_weeks(request_data, history)
+        duration_6_weeks = (extracted_w >= 6.0) if extracted_w is not None else False
         has_pt = "physical therapy" in prev_treat or "pt" in prev_treat
         has_nsaid = "nsaid" in prev_treat or "ibuprofen" in prev_treat or "naproxen" in prev_treat or "meloxicam" in prev_treat
         
         if not duration_6_weeks:
+            evidence_msg = "Low back pain duration is under the required 6 consecutive weeks."
+            if extracted_w is not None:
+                evidence_msg = f"Low back pain duration is under the required 6 consecutive weeks (documented: {extracted_w:.1f} weeks)."
             rules_results.append({
                 "rule": "Symptom Duration",
                 "status": "NOT_MET",
-                "evidence": "Low back pain duration is under the required 6 consecutive weeks."
+                "evidence": evidence_msg
             })
         else:
+            evidence_msg = "Back pain duration is documented as >= 6 consecutive weeks."
+            if extracted_w is not None:
+                evidence_msg = f"Back pain duration is documented as {extracted_w:.1f} weeks (>= 6 consecutive weeks required)."
             rules_results.append({
                 "rule": "Symptom Duration",
                 "status": "MET",
-                "evidence": "Back pain duration is documented as >= 6 consecutive weeks."
+                "evidence": evidence_msg
             })
             
         if not prev_treat or prev_treat == "none documented":
@@ -217,18 +270,25 @@ def evaluate_rules(request_data, policy):
         else:
             # check for duration details in history or previous treatment text
             combined_text = history + " " + prev_treat
-            duration_match = "12 week" in combined_text or "16 week" in combined_text or "24 week" in combined_text or "several" in combined_text or "years" in combined_text
+            extracted_w = extract_duration_in_weeks(request_data, combined_text)
+            duration_match = (extracted_w >= 12.0) if extracted_w is not None else False
             if duration_match:
+                evidence_msg = "Conservative management attempted for >= 12 weeks."
+                if extracted_w is not None:
+                    evidence_msg = f"Conservative management attempted for {extracted_w:.1f} weeks (>= 12 weeks required)."
                 rules_results.append({
                     "rule": "Conservative Treatment Duration",
                     "status": "MET",
-                    "evidence": "Conservative management attempted for >= 12 weeks."
+                    "evidence": evidence_msg
                 })
             else:
+                evidence_msg = "Conservative management trial duration is under 12 weeks or not clearly specified."
+                if extracted_w is not None:
+                    evidence_msg = f"Conservative management trial duration is under 12 weeks (documented: {extracted_w:.1f} weeks)."
                 rules_results.append({
                     "rule": "Conservative Treatment Duration",
                     "status": "INSUFFICIENT",
-                    "evidence": "Conservative management trial duration is under 12 weeks or not clearly specified."
+                    "evidence": evidence_msg
                 })
 
         # UHC Supervised PT check
